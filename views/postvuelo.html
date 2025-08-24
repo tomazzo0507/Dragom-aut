@@ -1,0 +1,306 @@
+<!-- /views/postvuelo.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://kit.fontawesome.com/460146b1b8.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/png" href="/assets/icon.png">
+  <link rel="stylesheet" href="/styles/general.css">
+  <link rel="stylesheet" href="/styles/postvuelo.css">
+  <title>Formulario Post-vuelo | DFR</title>
+
+  <script type="module" src="/controller/firebase.js"></script>
+  <script type="module" src="/controller/auth-guard.js"></script>
+</head>
+
+<body>
+  <!-- Hamburguesa / Backdrop -->
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="aside" id="sidebar">
+      <div class="inside">
+        <div class="brand">
+          <img src="/assets/dragompfp.jpg" alt="Dragom" class="imgdragomside"/>
+          <h2 class="nom">
+            DRAGOM FLIGHT REPORT
+            <small>Sistema de registro de vuelo</small>
+          </h2>
+        </div>
+
+        <nav aria-label="Menú principal">
+          <div class="menu">
+            <a href="/views/inicio.html" class="menu_item">
+              <i class="fa-solid fa-house"></i>
+              <span class="label">Inicio</span>
+            </a>
+
+            <div class="section-title">Pre-vuelo</div>
+            <a href="/views/prevuelo.html" class="menu_item">
+              <i class="ph ph-clipboard-text"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">pre-vuelo</span>
+              </span>
+            </a>
+
+            <div class="section-title">Vuelo</div>
+            <a href="/views/vuelo.html" class="menu_item">
+              <i class="ph ph-drone"></i>
+              <span class="label">Iniciar vuelo</span>
+            </a>
+
+            <div class="section-title">Post-vuelo</div>
+            <a href="/views/postvuelo.html" class="menu_item active">
+              <i class="ph ph-clipboard"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">post-vuelo</span>
+              </span>
+            </a>
+
+            <a href="/views/aeronave.html" class="menu_item">
+              <i class="ph ph-airplane"></i>
+              <span class="label">Aeronave</span>
+            </a>
+
+            <a href="/views/report.html" class="menu_item">
+              <i class="ph ph-file-pdf"></i>
+              <span class="label">Reporte</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="page-header">
+        <h1 class="page-title">Formulario de Registro Post-vuelo</h1>
+        <p class="page-sub">Registra los datos del vuelo, estado de aeronave/equipos y firmas.</p>
+      </header>
+
+      <!-- FORMULARIO COMPLETO -->
+      <form id="post-form" class="form" autocomplete="off" novalidate>
+        <!-- RESUMEN DE VUELO (AUTOMÁTICO) -->
+        <section class="row sumaryVue">
+          <div class="titulo"><h2>Resumen de vuelo</h2></div>
+          <hr>
+          <div class="info grid-3">
+            <div class="grup">
+              <label for="hora_despegue">Hora despegue</label>
+              <input type="time" id="hora_despegue" name="hora_despegue" readonly>
+            </div>
+            <div class="grup">
+              <label for="hora_aterrizaje">Hora aterrizaje</label>
+              <input type="time" id="hora_aterrizaje" name="hora_aterrizaje" readonly>
+            </div>
+            <div class="grup">
+              <label for="tiempo_vuelo">Tiempo de vuelo (min)</label>
+              <input type="text" id="tiempo_vuelo" name="tiempo_vuelo" readonly placeholder="0">
+            </div>
+          </div>
+        </section>
+
+        <!-- ESTADO POST-VUELO (MANUAL) -->
+        <section class="row generalStatePostvu">
+          <div class="titulo"><h2>Estado de la aeronave — post-vuelo</h2></div>
+          <hr>
+          <div class="info">
+            <div class="grup">
+              <label for="post_aero_descri">Describir Aeronave (Fisuras, Golpes, Delaminaciones)</label>
+              <textarea id="post_aero_descri" name="post_aero_descri" rows="5" placeholder="Escribe aquí..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- NOTAS DE VUELO (MANUAL) -->
+        <section class="row notasVuelo">
+          <div class="titulo"><h2>Notas de vuelo</h2></div>
+          <hr>
+          <div class="info">
+            <div class="grup">
+              <label for="post_notas_vuelo">Notas (incidentes, observaciones, etc.)</label>
+              <textarea id="post_notas_vuelo" name="post_notas_vuelo" rows="5" placeholder="Escribe aquí..."></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- REGISTRO DE MINUTOS ACUMULADOS (AUTOMÁTICO) -->
+        <section class="row regis_min">
+          <div class="titulo"><h2>Registro de minutos acumulados — aeronave y equipos</h2></div>
+          <hr>
+          <div class="info equip-grid">
+            <!-- AIRCRAFT -->
+            <article class="datos a_c">
+              <p class="nomequi">Aircraft</p>
+              <div class="serienum">S/N: <span id="ac_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp">
+                  <p>Minutos hoy</p>
+                  <strong id="ac_mins_hoy">0</strong>
+                </div>
+                <div class="minsdisp">
+                  <p>Minutos total</p>
+                  <strong id="ac_mins_total">0</strong>
+                </div>
+              </div>
+            </article>
+
+            <!-- BATERÍAS -->
+            <article class="datos batery">
+              <p class="nomequi">Batería 1</p>
+              <div class="serienum">S/N: <span id="b1_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp">
+                  <p>Minutos hoy</p><strong id="b1_mins_hoy">0</strong>
+                </div>
+                <div class="minsdisp">
+                  <p>Minutos total</p><strong id="b1_mins_total">0</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="datos batery">
+              <p class="nomequi">Batería 2</p>
+              <div class="serienum">S/N: <span id="b2_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp">
+                  <p>Minutos hoy</p><strong id="b2_mins_hoy">0</strong>
+                </div>
+                <div class="minsdisp">
+                  <p>Minutos total</p><strong id="b2_mins_total">0</strong>
+                </div>
+              </div>
+            </article>
+
+            <!-- MOTORES -->
+            <article class="datos motor">
+              <p class="nomequi">Motor 1</p>
+              <div class="serienum">S/N: <span id="m1_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp"><p>Minutos hoy</p><strong id="m1_mins_hoy">0</strong></div>
+                <div class="minsdisp"><p>Minutos total</p><strong id="m1_mins_total">0</strong></div>
+              </div>
+            </article>
+
+            <article class="datos motor">
+              <p class="nomequi">Motor 2</p>
+              <div class="serienum">S/N: <span id="m2_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp"><p>Minutos hoy</p><strong id="m2_mins_hoy">0</strong></div>
+                <div class="minsdisp"><p>Minutos total</p><strong id="m2_mins_total">0</strong></div>
+              </div>
+            </article>
+
+            <article class="datos motor">
+              <p class="nomequi">Motor 3</p>
+              <div class="serienum">S/N: <span id="m3_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp"><p>Minutos hoy</p><strong id="m3_mins_hoy">0</strong></div>
+                <div class="minsdisp"><p>Minutos total</p><strong id="m3_mins_total">0</strong></div>
+              </div>
+            </article>
+
+            <article class="datos motor">
+              <p class="nomequi">Motor 4</p>
+              <div class="serienum">S/N: <span id="m4_sn">—</span></div>
+              <div class="mins">
+                <div class="minsdisp"><p>Minutos hoy</p><strong id="m4_mins_hoy">0</strong></div>
+                <div class="minsdisp"><p>Minutos total</p><strong id="m4_mins_total">0</strong></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- FIRMAS -->
+        <section class="row crewVu">
+          <div class="titulo"><h2>Aceptación tripulación de vuelo</h2></div>
+          <hr>
+          <div class="info firmas">
+            <!-- Firma: Líder -->
+            <div class="firma">
+              <label for="nom_lider">Líder de misión</label>
+              <input type="text" id="nom_lider" name="nom_lider" placeholder="Nombre del Líder de Misión" class="nombre-firma">
+              <canvas id="firma_lider" class="firma-canvas"></canvas>
+              <button type="button" class="firma-btn-mobile" data-canvas="firma_lider">Firmar</button>
+              <div class="firma-btns botones">
+                <button type="button" class="limp limpiar-firma" data-canvas="firma_lider">Limpiar</button>
+                <button type="button" class="gua guardar-firma" data-canvas="firma_lider">Guardar</button>
+              </div>
+            </div>
+
+            <!-- Firma: Piloto interno -->
+            <div class="firma">
+              <label for="nom_piloto_int">Piloto interno</label>
+              <input type="text" id="nom_piloto_int" name="nom_piloto_int" placeholder="Nombre del Piloto Interno" class="nombre-firma">
+              <canvas id="firma_piloto_int" class="firma-canvas"></canvas>
+              <button type="button" class="firma-btn-mobile" data-canvas="firma_piloto_int">Firmar</button>
+              <div class="firma-btns botones">
+                <button type="button" class="limp limpiar-firma" data-canvas="firma_piloto_int">Limpiar</button>
+                <button type="button" class="gua guardar-firma" data-canvas="firma_piloto_int">Guardar</button>
+              </div>
+            </div>
+
+            <!-- Firma: Piloto externo -->
+            <div class="firma">
+              <label for="nom_piloto_ext">Piloto externo</label>
+              <input type="text" id="nom_piloto_ext" name="nom_piloto_ext" placeholder="Nombre del Piloto Externo" class="nombre-firma">
+              <canvas id="firma_piloto_ext" class="firma-canvas"></canvas>
+              <button type="button" class="firma-btn-mobile" data-canvas="firma_piloto_ext">Firmar</button>
+              <div class="firma-btns botones">
+                <button type="button" class="limp limpiar-firma" data-canvas="firma_piloto_ext">Limpiar</button>
+                <button type="button" class="gua guardar-firma" data-canvas="firma_piloto_ext">Guardar</button>
+              </div>
+            </div>
+
+            <!-- Firma: Ing. de vuelo -->
+            <div class="firma">
+              <label for="nom_ingeVu">Ingeniero de vuelo</label>
+              <input type="text" id="nom_ingeVu" name="nom_ingeVu" placeholder="Nombre del Ingeniero de Vuelo" class="nombre-firma">
+              <canvas id="firma_ingeVu" class="firma-canvas"></canvas>
+              <button type="button" class="firma-btn-mobile" data-canvas="firma_ingeVu">Firmar</button>
+              <div class="firma-btns botones">
+                <button type="button" class="limp limpiar-firma" data-canvas="firma_ingeVu">Limpiar</button>
+                <button type="button" class="gua guardar-firma" data-canvas="firma_ingeVu">Guardar</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Modal firmas (móvil) -->
+        <div id="firmaModal" class="firma-modal" aria-hidden="true">
+          <div class="firma-modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="firma-modal-header">
+              <h3 id="modalTitle">Firmar</h3>
+              <button type="button" class="modal-close" id="modalClose" aria-label="Cerrar modal">&times;</button>
+            </div>
+            <div class="firma-modal-body">
+              <canvas id="modalCanvas" class="modal-firma-canvas"></canvas>
+              <div class="modal-firma-btns">
+                <button type="button" class="limp limpiar-firma-modal">Limpiar</button>
+                <button type="button" class="gua guardar-firma-modal">Guardar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="botones end-actions">
+          <button type="submit" class="aceptar"><i class="ph ph-check"></i> Enviar</button>
+          <a href="/views/inicio.html" class="cancelar"><i class="ph ph-x"></i> Cancelar</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="/controller/ui.js"></script>
+  <script type="module" src="/controller/postvuelo.js"></script>
+</body>
+</html>

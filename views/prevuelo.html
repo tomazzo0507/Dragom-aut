@@ -1,0 +1,280 @@
+<!--prevuelo.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://kit.fontawesome.com/460146b1b8.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/png" href="/assets/icon.png">
+  <link rel="stylesheet" href="/styles/general.css">
+  <link rel="stylesheet" href="/styles/prevuelo.css">
+  <title>Formulario Pre-vuelo | DFR</title>
+  <script type="module" src="/controller/firebase.js"></script>
+  <script type="module" src="/controller/auth-guard.js"></script>
+</head>
+
+<body>
+  <!-- Botón hamburguesa -->
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="aside" id="sidebar">
+      <div class="inside">
+        <div class="brand">
+          <img src="/assets/dragompfp.jpg" alt="Dragom" class="imgdragomside" />
+          <h2 class="nom">
+            DRAGOM FLIGHT REPORT
+            <small>Sistema de registro de vuelo</small>
+          </h2>
+        </div>
+
+        <nav aria-label="Menú principal">
+          <div class="menu">
+            <a href="/views/inicio.html" class="menu_item">
+              <i class="fa-solid fa-house"></i>
+              <span class="label">Inicio</span>
+            </a>
+
+            <div class="section-title">Pre-vuelo</div>
+            <a href="/views/prevuelo.html" class="menu_item active">
+              <i class="ph ph-clipboard-text"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">pre-vuelo</span>
+              </span>
+            </a>
+
+            <div class="section-title">Vuelo</div>
+            <a href="/views/vuelo.html" class="menu_item">
+              <i class="ph ph-drone"></i>
+              <span class="label">Iniciar vuelo</span>
+            </a>
+
+            <div class="section-title">Post-vuelo</div>
+            <a href="/views/postvuelo.html" class="menu_item">
+              <i class="ph ph-clipboard-text"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">post-vuelo</span>
+              </span>
+            </a>
+
+            <a href="/views/aeronave.html" class="menu_item">
+              <i class="ph ph-airplane"></i>
+              <span class="label">Aeronave</span>
+            </a>
+
+            <a href="/views/report.html" class="menu_item">
+              <i class="ph ph-file-pdf"></i>
+              <span class="label">Reporte</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <h1 class="page-title">FORMULARIO DE REGISTRO PRE-VUELO</h1><br>
+
+      <!-- AHORA ES FORM: id="pv-form" -->
+      <form id="pv-form" class="form" autocomplete="off">
+
+        <!-- Info General -->
+        <div class="row infoFLight">
+          <div class="titulo">
+            <h2>INFO GENERAL DE VUELO</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <div class="grup">
+              <label>Fecha</label>
+              <input type="date" placeholder="Fecha">
+            </div>
+            <div class="grup">
+              <label>Hora</label>
+              <input type="time" placeholder="Hora">
+            </div>
+            <input type="text" placeholder="Lugar">
+            <input type="text" placeholder="Matrícula">
+            <input type="text" placeholder="Tiempo estimado de vuelo">
+          </div>
+        </div>
+
+        <!-- Condiciones Atmosféricas -->
+        <div class="row condAtmo">
+          <div class="titulo">
+            <h2>CONDICIONES ATMOSFÉRICAS</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <input type="text" placeholder="Velocidad del viento">
+            <input type="text" placeholder="Ráfagas de viento m/s">
+            <input type="text" placeholder="Dirección del viento">
+            <input type="text" placeholder="Valor KP">
+            <input type="text" placeholder="Precipitación %">
+            <input type="text" placeholder="Visibilidad km">
+            <input type="text" placeholder="Temperatura °C">
+            <input type="text" placeholder="Humedad">
+            <input type="text" placeholder="Sat. Bloqueados">
+          </div>
+        </div>
+
+        <!-- Tripulación -->
+        <div class="row crew">
+          <div class="titulo">
+            <h2>TRIPULACIÓN</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <input type="text" placeholder="Líder de misión">
+            <input type="text" placeholder="Piloto externo">
+            <input type="text" placeholder="Piloto interno">
+            <input type="text" placeholder="Ing. de vuelo">
+            <input type="text" placeholder="Ing. Soporte">
+            <input type="text" placeholder="Lanzador">
+          </div>
+        </div>
+
+        <!-- Site Survey -->
+        <div class="row siteSurv">
+          <div class="titulo">
+            <h2>SITE SURVEY</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <input type="text" placeholder="E. Aéreo">
+            <input type="text" placeholder="E. Terrestre">
+            <input type="text" placeholder="Clima">
+            <input type="text" placeholder="Personas">
+            <input type="text" placeholder="Puntuación">
+            <input type="text" placeholder="Riesgo de operación">
+          </div>
+        </div>
+
+        <!-- Estado Aeronave -->
+        <div class="row aircState">
+          <div class="titulo">
+            <h2>ESTADO DE LA AERONAVE <br> PRE-VUELO</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <textarea placeholder="Describir Aeronave - (Fisuras, Golpes, Delaminaciones)"></textarea>
+          </div>
+        </div>
+
+        <!-- Tareas Pre-vuelo -->
+        <div class="row tareasPrevu">
+          <div class="titulo">
+            <h2>TAREAS PRE-VUELO</h2>
+          </div>
+          <hr>
+          <div class="info">
+            <!-- (Mantengo tu estructura de tareas) -->
+            <div class="tarea-item">
+              <label>Ensamble y chequeo de plataforma</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea1" id="tarea1_si"><label for="tarea1_si">✅</label>
+                <input type="radio" name="tarea1" id="tarea1_no"><label for="tarea1_no">❌</label>
+                <input type="radio" name="tarea1" id="tarea1_na"><label for="tarea1_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Ensamble y calibración GDT de plataforma</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea2" id="tarea2_si"><label for="tarea2_si">✅</label>
+                <input type="radio" name="tarea2" id="tarea2_no"><label for="tarea2_no">❌</label>
+                <input type="radio" name="tarea2" id="tarea2_na"><label for="tarea2_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Alistamiento GCS primaria y auxiliar</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea3" id="tarea3_si"><label for="tarea3_si">✅</label>
+                <input type="radio" name="tarea3" id="tarea3_no"><label for="tarea3_no">❌</label>
+                <input type="radio" name="tarea3" id="tarea3_na"><label for="tarea3_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Inicialización y conexión</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea4" id="tarea4_si"><label for="tarea4_si">✅</label>
+                <input type="radio" name="tarea4" id="tarea4_no"><label for="tarea4_no">❌</label>
+                <input type="radio" name="tarea4" id="tarea4_na"><label for="tarea4_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Elaboración y carga de plan de vuelo</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea5" id="tarea5_si"><label for="tarea5_si">✅</label>
+                <input type="radio" name="tarea5" id="tarea5_no"><label for="tarea5_no">❌</label>
+                <input type="radio" name="tarea5" id="tarea5_na"><label for="tarea5_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Chequeo de baterías y sistemas de la plataforma</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea6" id="tarea6_si"><label for="tarea6_si">✅</label>
+                <input type="radio" name="tarea6" id="tarea6_no"><label for="tarea6_no">❌</label>
+                <input type="radio" name="tarea6" id="tarea6_na"><label for="tarea6_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Despeje y ejecución de misión</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea7" id="tarea7_si"><label for="tarea7_si">✅</label>
+                <input type="radio" name="tarea7" id="tarea7_no"><label for="tarea7_no">❌</label>
+                <input type="radio" name="tarea7" id="tarea7_na"><label for="tarea7_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Aterrizaje y recuperación</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea8" id="tarea8_si"><label for="tarea8_si">✅</label>
+                <input type="radio" name="tarea8" id="tarea8_no"><label for="tarea8_no">❌</label>
+                <input type="radio" name="tarea8" id="tarea8_na"><label for="tarea8_na">N/A</label>
+              </div>
+            </div>
+
+            <div class="tarea-item">
+              <label>Chequeo post-vuelo y notas de vuelo</label>
+              <div class="checkbox-group">
+                <input type="radio" name="tarea9" id="tarea9_si"><label for="tarea9_si">✅</label>
+                <input type="radio" name="tarea9" id="tarea9_no"><label for="tarea9_no">❌</label>
+                <input type="radio" name="tarea9" id="tarea9_na"><label for="tarea9_na">N/A</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="botones">
+          <button type="submit" class="aceptar">
+            <i class="ph ph-check"></i> Enviar
+          </button>
+          <a href="/views/inicio.html" class="cancelar">
+            <i class="ph ph-x"></i> Cancelar
+          </a>
+        </div>
+
+      </form>
+      <!-- /#pv-form -->
+    </main>
+  </div>
+
+  <script type="module" src="/controller/ui.js"></script>
+  <script type="module" src="/controller/prevuelo.js"></script>
+</body>
+</html>

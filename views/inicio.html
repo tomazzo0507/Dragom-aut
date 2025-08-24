@@ -1,0 +1,182 @@
+<!--inicio.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://kit.fontawesome.com/460146b1b8.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/png" href="/assets/icon.png" />
+  <link rel="stylesheet" href="/styles/general.css" />
+  <link rel="stylesheet" href="/styles/inicio.css" />
+  <title>Inicio DFR</title>
+
+  <!-- Firebase + guard primero -->
+  <script type="module" src="/controller/firebase.js"></script>
+  <script type="module" src="/controller/auth-guard.js"></script>
+</head>
+
+<body>
+  <!-- Botón hamburguesa y backdrop -->
+  <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- ASIDE y MAIN -->
+  <div class="layout">
+    <aside class="aside" id="sidebar">
+      <div class="inside">
+        <div class="brand">
+          <img src="/assets/dragompfp.jpg" alt="Dragom" class="imgdragomside" />
+          <h2 class="nom">
+            DRAGOM FLIGHT REPORT
+            <small>Sistema de registro de vuelo</small>
+          </h2>
+        </div>
+
+        <nav aria-label="Menú principal">
+          <div class="menu">
+            <a href="/views/inicio.html" class="menu_item active">
+              <i class="fa-solid fa-house"></i>
+              <span class="label">Inicio</span>
+            </a>
+
+            <div class="section-title">Pre-vuelo</div>
+            <a href="/views/prevuelo.html" class="menu_item gate">
+              <i class="ph ph-clipboard-text"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">pre-vuelo</span>
+              </span>
+            </a>
+
+            <div class="section-title">Vuelo</div>
+            <a href="/views/vuelo.html" class="menu_item gate">
+              <i class="ph ph-drone"></i>
+              <span class="label">Iniciar vuelo</span>
+            </a>
+
+            <div class="section-title">Post-vuelo</div>
+            <a href="/views/postvuelo.html" class="menu_item gate">
+              <i class="ph ph-clipboard-text"></i>
+              <span class="label">
+                Formulario
+                <span class="sub">post-vuelo</span>
+              </span>
+            </a>
+
+            <a href="/views/aeronave.html" class="menu_item gate">
+              <i class="ph ph-airplane"></i>
+              <span class="label">Aeronave</span>
+            </a>
+
+            <a href="/views/report.html" class="menu_item gate">
+              <i class="ph ph-file-pdf"></i>
+              <span class="label">Reporte</span>
+            </a>
+
+            <div class="section-title">Usuario</div>
+            <!-- (el botón Registrar solo se añade por JS si el rol es editor) -->
+            <button id="logout-btn" class="menu_item" type="button">
+              <i class="ph ph-sign-out"></i>
+              <span class="label">Cerrar sesión</span>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="page-header">
+        <h1 class="page-title">Inicio</h1>
+        <p class="page-sub">Busca el DRAGOM por su <strong>S/N</strong> para comenzar.</p>
+
+        <!-- Botón para crear aeronave (se oculta a no editores vía JS) -->
+        <button id="btn-add-drone" class="btn" type="button" style="margin-top:12px;">
+          <i class="ph ph-plus" aria-hidden="true"></i> Agregar aeronave
+        </button>
+      </header>
+
+      <form class="searchbar" id="search-form" autocomplete="off">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <label for="search-sn" class="sr-only" style="position:absolute;left:-9999px;">Buscar por número de serie
+          (S/N)</label>
+        <input id="search-sn" class="search-input" type="text" inputmode="text" placeholder="Ej: DGM-2024-001234 (S/N)"
+          aria-label="Buscar por número de serie (S/N)" required />
+        <button class="search-btn" type="submit">Buscar</button>
+      </form>
+
+      <section id="search-results" class="results"></section>
+    </main>
+  </div>
+
+  <!-- ================== MODAL AGREGAR AERONAVE ================== -->
+  <div class="modal" id="modal-drone" aria-hidden="true">
+    <div class="modal__panel">
+      <header class="modal__head">
+        <h3>Agregar aeronave</h3>
+        <button type="button" class="modal__close" id="close-modal">&times;</button>
+      </header>
+      <form id="form-drone" class="modal__form">
+        <div class="row">
+          <label>S/N aeronave</label>
+          <input name="sn" required placeholder="Ej: DGM-2024-001234">
+        </div>
+        <div class="row">
+          <label>P/N (opcional)</label>
+          <input name="pn" placeholder="Ej: Original">
+        </div>
+
+        <!-- Motores: S/N + horas -->
+        <fieldset class="grid2">
+          <legend>Motores</legend>
+
+          <div>
+            <input name="m1" placeholder="Motor 1 - S/N">
+            <input name="m1h" type="number" min="0" step="0.1" placeholder="Horas (h)">
+          </div>
+          <div>
+            <input name="m2" placeholder="Motor 2 - S/N">
+            <input name="m2h" type="number" min="0" step="0.1" placeholder="Horas (h)">
+          </div>
+          <div>
+            <input name="m3" placeholder="Motor 3 - S/N">
+            <input name="m3h" type="number" min="0" step="0.1" placeholder="Horas (h)">
+          </div>
+          <div>
+            <input name="m4" placeholder="Motor 4 - S/N">
+            <input name="m4h" type="number" min="0" step="0.1" placeholder="Horas (h)">
+          </div>
+        </fieldset>
+
+        <!-- Baterías: S/N + ciclos -->
+        <fieldset class="grid2">
+          <legend>Baterías</legend>
+
+          <div>
+            <input name="b1" placeholder="Batería 1 - S/N">
+            <input name="b1c" type="number" min="0" step="1" placeholder="Ciclos">
+          </div>
+          <div>
+            <input name="b2" placeholder="Batería 2 - S/N">
+            <input name="b2c" type="number" min="0" step="1" placeholder="Ciclos">
+          </div>
+        </fieldset>
+
+
+        <button class="btn" type="submit">Guardar aeronave</button>
+      </form>
+    </div>
+  </div>
+  <!-- =========================================================== -->
+
+  <!-- Cargar controladores -->
+  <script type="module" src="/controller/ui.js"></script>
+  <script type="module" src="/controller/inicio.js"></script>
+  <script type="module" src="/controller/logout.js"></script>
+</body>
+
+</html>

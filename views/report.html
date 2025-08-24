@@ -1,0 +1,304 @@
+<!--report.html-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/styles/report.css">
+  <script type="module" src="/controller/firebase.js"></script>
+  <script type="module" src="/controller/auth-guard.js"></script>
+</head>
+
+<body>
+  <!------------------------TABLA 1 PRE VUELO--------------------------->
+  <table>
+    <tr>
+      <td class="col1 img-cell"><img class="logo" src="/assets/CIAC-logo.png" alt="Logo CIAC"></td>
+      <td class="col2 center"><strong>CORPORACIÓN DE LA INDUSTRIA AERONÁUTICA COLOMBIANA<br>HOJA DE REGISTRO DE
+          VUELO</strong></td>
+      <td class="col3 smallbox">
+        <strong>Aeronave: UAV-Dragom</strong><br>
+        <hr>
+        <strong>P/N: </strong>Original<br>
+        <hr>
+        <strong>S/N: </strong>123456789
+      </td>
+    </tr>
+
+    <!-- Sección: INFORMACIÓN GENERAL DEL VUELO -->
+    <tr>
+      <td colspan="3" class="gray">INFORMACIÓN GENERAL DEL VUELO</td>
+    </tr>
+    <tr>
+      <td>Fecha (DD/MM/AAAA) <span id="pv_fecha"></span></td>
+      <td>Lugar de Operación <span id="pv_lugar"></span></td>
+      <td>Matrícula <span id="pv_matricula"></span></td>
+    </tr>
+    <tr>
+      <td>Hora (HH:MM) <span id="pv_hora"></span></td>
+      <td>Tiempo EST en Vuelo (min) <span id="pv_tiempo_est"></span></td>
+      <td>Altitud de Lanzamiento AGL (m) <span id="pv_altitud_agl"></span></td>
+    </tr>
+    <tr>
+      <td>Propósito del Vuelo <span id="pv_proposito"></span></td>
+      <td>Cód. <span id="pv_codigo"></span></td>
+      <td></td>
+    </tr>
+
+    <!-- Sección: CONDICIONES ATMOSFÉRICAS -->
+    <tr>
+      <td colspan="3" class="gray">CONDICIONES ATMOSFÉRICAS</td>
+    </tr>
+    <tr>
+      <td>Velocidad del Viento (m/s) <span id="pv_viento"></span></td>
+      <td>Ráfagas de Viento (m/s) <span id="pv_rafagas"></span></td>
+      <td>Dirección del Viento <span id="pv_dir_viento"></span></td>
+    </tr>
+    <tr>
+      <td>Valor Kp <span id="pv_kp"></span></td>
+      <td>Precipitación (%) <span id="pv_precipitacion"></span></td>
+      <td>Visibilidad (km) <span id="pv_visibilidad"></span></td>
+    </tr>
+    <tr>
+      <td>Temperatura (°C) <span id="pv_temperatura"></span></td>
+      <td>Humedad (%) <span id="pv_humedad"></span></td>
+      <td>Sat. Bloqueados <span id="pv_sat_bloqueados"></span></td>
+    </tr>
+
+    <!-- Sección: TRIPULACIÓN -->
+    <tr>
+      <td colspan="3" class="gray">TRIPULACIÓN</td>
+    </tr>
+    <tr>
+      <td>Líder de Misión <span id="pv_lider_mision"></span></td>
+      <td>Piloto Externo <span id="pv_piloto_externo"></span></td>
+      <td>Piloto Interno <span id="pv_piloto_interno"></span></td>
+    </tr>
+    <tr>
+      <td>Ing. de Vuelo <span id="pv_ing_vuelo"></span></td>
+      <td>Ing. de Soporte <span id="pv_ing_soporte"></span></td>
+      <td>Lanzador <span id="pv_lanzador"></span></td>
+    </tr>
+
+    <!-- Sección: SITE SURVEY -->
+    <tr>
+      <td colspan="3" class="gray">SITE SURVEY</td>
+    </tr>
+    <tr>
+      <td>E. Aéreo <span id="pv_entorno_aereo"></span></td>
+      <td>E. Terrestre <span id="pv_entorno_terrestre"></span></td>
+      <td>Clima <span id="pv_clima"></span></td>
+    </tr>
+    <tr>
+      <td>Puntuación Site Survey <span id="pv_puntuacion"></span></td>
+      <td>Riesgo de Operación <span id="pv_riesgo"></span></td>
+      <td>Personas <span id="pv_personas"></span></td>
+    </tr>
+
+    <!-- Sección: ESTADO DE LA AERONAVE -->
+    <tr>
+      <td colspan="3" class="gray">ESTADO DE LA AERONAVE PREVIO AL VUELO</td>
+    </tr>
+    <tr>
+      <td colspan="3">Descripción Aeronave -- (Fisuras, Golpes, Delaminaciones) <span id="pv_estado_aeronave"></span></td>
+    </tr>
+
+    <!-- Sección: TAREAS -->
+    <tr>
+      <td colspan="3" class="gray">EJECUCIÓN DE TAREAS PRE VUELO</td>
+    </tr>
+    <tr>
+      <td colspan="3">Ensamble y Chequeo de Plataforma <span id="pv_tarea1"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Ensamble y Calibración GDT <span id="pv_tarea2"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Alistamiento GCS Primaria y Auxiliar <span id="pv_tarea3"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Inicialización y Conexión <span id="pv_tarea4"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Elaboración y Carga de Plan de Vuelo <span id="pv_tarea5"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Chequeo de Baterías y Sistemas de la Plataforma <span id="pv_tarea6"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Despegue y Ejecución de Misión <span id="pv_tarea7"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Aterrizaje y Recuperación <span id="pv_tarea8"></span></td>
+    </tr>
+    <tr>
+      <td colspan="3">Chequeo Post Vuelo y Notas de Vuelo <span id="pv_tarea9"></span></td>
+    </tr>
+
+    <!-- Sección: RESUMEN -->
+    <tr>
+      <td colspan="3" class="gray">RESUMEN DE VUELO</td>
+    </tr>
+    <tr>
+      <td>Hora Despegue <span id="post_hora_despegue"></span></td>
+      <td>Hora Aterrizaje <span id="post_hora_aterrizaje"></span></td>
+      <td>Tiempo de Vuelo (min) <span id="post_tiempo_vuelo"></span></td>
+    </tr>
+  </table>
+
+
+
+  <!------------------------TABLA 2 POST VUELO--------------------------->
+
+  <table>
+    <tr>
+      <td class="col1 img-cell">
+        <img class="logo" src="/assets/CIAC-logo.png" alt="Logo CIAC">
+      </td>
+      <td class="col2 center">
+        <strong>
+          CORPORACIÓN DE LA INDUSTRIA AERONÁUTICA COLOMBIANA<br>
+          HOJA DE REGISTRO DE VUELO
+        </strong>
+      </td>
+      <td class="col3 smallbox">
+        <strong>Aeronave: UAV-Dragom</strong><br>
+        <hr>
+        <strong>P/N: </strong>Original<br>
+        <hr>
+        <strong>S/N: </strong>123456789
+      </td>
+    </tr>
+
+    <!-- ESTADO GENERAL DEL VUELO -->
+    <tr>
+      <td colspan="3" class="gray">ESTADO DE LA AERONAVE POST VUELO</td>
+    </tr>
+    <tr>
+      <td colspan="3">Descripción de la Aeronave - (Fisuras, Golpes, Delaminaciones)</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span id="post_estado_aeronave"></span></td>
+    </tr>
+
+    <!-- NOTAS DE VUELO -->
+    <tr>
+      <td colspan="3" class="gray">NOTAS DE VUELO</td>
+    </tr>
+    <tr>
+      <td colspan="3"><span id="post_notas_vuelo"></span></td>
+    </tr>
+
+    <!-- REGISTRO DE MINUTOS ACUMULADOS -->
+    <tr>
+      <td colspan="3" class="gray">REGISTRO DE MINUTOS ACUMULADOS - AERONAVE Y EQUIPOS - EN MINUTOS</td>
+    </tr>
+    <tr class="row-compact">
+      <td colspan="3" class="no-padding">
+        <table class="minutes-7col">
+          <tr>
+            <th>A/C</th>
+            <th>BATERÍA 1</th>
+            <th>BATERÍA 2</th>
+            <th>MOTOR 1</th>
+            <th>MOTOR 2</th>
+            <th>MOTOR 3</th>
+            <th>MOTOR 4</th>
+          </tr>
+          <tr>
+            <!-- A/C -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="ac_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="ac_mins_hoy"></span></td><td><span id="ac_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Batería 1 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="b1_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="b1_mins_hoy"></span></td><td><span id="b1_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Batería 2 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="b2_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="b2_mins_hoy"></span></td><td><span id="b2_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Motor 1 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="m1_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="m1_mins_hoy"></span></td><td><span id="m1_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Motor 2 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="m2_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="m2_mins_hoy"></span></td><td><span id="m2_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Motor 3 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="m3_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="m3_mins_hoy"></span></td><td><span id="m3_mins_total">.</span></td></tr>
+              </table>
+            </td>
+            <!-- Motor 4 -->
+            <td>
+              <table class="sub-table">
+                <tr><td>S/N</td><td><span id="m4_sn"></span></td></tr>
+                <tr><td>MINS HOY</td><td>MINS TOTAL</td></tr>
+                <tr><td><span id="m4_mins_hoy"></span></td><td><span id="m4_mins_total">.</span></td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- FIRMAS ACEPTACIÓN TRIPULACIÓN DE VUELO -->
+    <tr>
+      <td colspan="3" class="gray">ACEPTACIÓN TRIPULACIÓN DE VUELO</td>
+    </tr>
+    <tr class="row-compact">
+      <td colspan="3" class="no-padding">
+        <table class="signatures-simple">
+          <tr>
+            <td class="firmas" id="firma_lider"></td>
+            <td class="firmas" id="firma_piloto_interno"></td>
+            <td class="firmas" id="firma_piloto_externo"></td>
+            <td class="firmas" id="firma_ing_vuelo"></td>
+          </tr>
+          <tr>
+            <td><strong>Nombre:</strong> <span id="nombre_lider"></span></td>
+            <td><strong>Nombre:</strong> <span id="nombre_piloto_interno"></span></td>
+            <td><strong>Nombre:</strong> <span id="nombre_piloto_externo"></span></td>
+            <td><strong>Nombre:</strong> <span id="nombre_ing_vuelo"></span></td>
+          </tr>
+          <tr>
+            <td>Lider de Misión</td>
+            <td>Piloto Interno</td>
+            <td>Piloto Externo</td>
+            <td>Ing. de Vuelo</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+  </table>
+
+  <script src="/controller/report.js"></script>
+</body>
+</html>
+

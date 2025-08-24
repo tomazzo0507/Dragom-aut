@@ -1,0 +1,87 @@
+<!-- /create-admin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seed admin</title>
+</head>
+<body>
+  <pre>Creando usuario “Editor Inicial” … revisa la consola.</pre>
+  <script type="module">
+    import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import {
+      getAuth as getAuthFromApp,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut as signOutAuth
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    // Usa EXACTAMENTE la misma config que /controller/firebase.js
+    const firebaseConfig = {
+      apiKey: "AIzaSyDlwBfZY0sAmRI_SdxfBKzDgO8G6nZmpdU",
+      authDomain: "uav-dragom.firebaseapp.com",
+      projectId: "uav-dragom",
+      storageBucket: "uav-dragom.firebasestorage.app",
+      messagingSenderId: "281047925009",
+      appId: "1:281047925009:web:947e5efeba90c596828cb0",
+      measurementId: "G-RJMX0M24GL"
+    };
+
+    // Datos del admin inicial
+    const NAME = "Editor Inicial";
+    const EMAIL = "vargasgiraldotomas@gmail.com";
+    const PASS  = "123_456_789";
+    const ROLE  = "editor";
+
+    async function ensureEditor() {
+      // App secundaria de seed
+      const secondary = initializeApp(firebaseConfig, "seed");
+      const auth2 = getAuthFromApp(secondary);
+      const db2   = getFirestore(secondary);
+
+      let userCred;
+      try {
+        // 1) Intentar crear
+        userCred = await createUserWithEmailAndPassword(auth2, EMAIL, PASS);
+        console.log("✔ Usuario creado:", userCred.user.uid);
+      } catch (e) {
+        if (e?.code === "auth/email-already-in-use") {
+          // 2) Si ya existe, loguearse para obtener UID
+          console.warn("El email ya existe. Iniciando sesión para completar el perfil…");
+          userCred = await signInWithEmailAndPassword(auth2, EMAIL, PASS);
+        } else {
+          throw e;
+        }
+      }
+
+      const uid = userCred.user.uid;
+      // 3) Asegurar doc de /users/{uid}
+      const uref = doc(db2, "users", uid);
+      const snap = await getDoc(uref);
+      if (!snap.exists()) {
+        await setDoc(uref, {
+          name: NAME,
+          email: EMAIL,
+          role: ROLE,
+          createdAt: serverTimestamp()
+        });
+        console.log("✔ Doc de usuario creado en Firestore");
+      } else {
+        console.log("ℹ Doc de usuario ya existía");
+      }
+
+      await signOutAuth(auth2);
+      await deleteApp(secondary);
+      alert("Seed OK. Ya puedes iniciar sesión con ese correo.");
+    }
+
+    ensureEditor().catch(err => {
+      console.error("Seed error:", err);
+      alert(`Seed error: ${err?.message || err}`);
+    });
+  </script>
+</body>
+</html>

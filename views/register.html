@@ -1,0 +1,66 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro | Dragom</title>
+  <link rel="stylesheet" href="../styles/index.css">
+  <script src="https://kit.fontawesome.com/460146b1b8.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="login-shell">
+    <div class="login-card">
+
+      <!-- Columna izquierda (formulario) -->
+      <div class="login-left">
+        <h1 class="login-title">Crear cuenta</h1>
+        <p class="login-sub">Regístrate para comenzar a usar el sistema</p>
+
+        <form class="form" id="register-form">
+          <div class="field">
+            <input type="text" class="input" id="fullName" placeholder="Nombre completo" required>
+          </div>
+          <div class="field">
+            <input type="email" class="input" id="email" placeholder="Correo electrónico" required>
+          </div>
+          <div class="field">
+            <input type="password" class="input" id="password" placeholder="Contraseña" required>
+            <span class="suffix"><i class="fas fa-eye" id="togglePassword"></i></span>
+          </div>
+          <div class="field">
+            <select class="input" id="role" required>
+              <option value="" disabled selected>Selecciona tu rol</option>
+              <option value="editor">Editor</option>
+              <option value="revisor">Revisor</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">Registrarse</button>
+        </form>
+
+        <div class="meta">
+          <span>¿Ya tienes cuenta?</span>
+          <a href="../index.html">Inicia sesión</a>
+        </div>
+      </div>
+
+      <!-- Columna derecha (bienvenida) -->
+      <div class="login-right">
+        <div class="right-bubble">
+          <h2 class="welcome-title">¡Bienvenido a Dragom!</h2>
+          <p class="welcome-text">Regístra a alguien capacitado para acceder al sistema de registro de vuelos
+            UAV-DRAGOM.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../controller/firebase.js"></script>
+  <script type="module" src="../controller/auth-guard.js"></script>
+  <script type="module" src="../controller/register.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!--index.html-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://kit.fontawesome.com/460146b1b8.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/styles/index.css">
+  <title>Login DFR</title>
+</head>
+
+<body>
+
+  <div class="login-shell">
+    <section class="login-card">
+      <aside class="login-right">
+        <div class="right-bubble">
+          <div>
+            <h2 class="welcome-title">¡Bienvenido al DFR!</h2>
+            <p class="welcome-text">Para mantenerse conectado al Dragom Flight Report, inicie sesión con sus
+              credenciales.</p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="login-left">
+        <h1 class="login-title">Iniciar Sesión</h1>
+        <p class="login-sub">O usa tu Email y contraseña</p>
+
+        <form id="login-form" class="form">
+          <div class="field">
+            <input class="input" type="text" placeholder="Usuario" id="email">
+          </div>
+          <div class="field">
+            <input class="input" type="password" placeholder="Password" id="password">
+            <i id="togglePassword" class="fa-regular fa-eye-slash suffix"></i>
+          </div>
+          <button class="btn" type="submit">INGRESAR</button>
+
+          <div class="meta">
+            <span></span>
+            <a href="#">¿Olvidaste tu contraseña?</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="/controller/firebase.js"></script>
+  <script type="module" src="/controller/auth-guard.js"></script>
+  <script type="module" src="/controller/login.js"></script>
+
+</body>
+
+</html>

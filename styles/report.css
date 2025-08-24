@@ -1,0 +1,453 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    list-style: none;
+    font-size: 12px;
+    text-decoration: none;
+    scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    font-size: 11px;
+}
+
+table {
+    width: 100vw;
+    height: auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th,
+td {
+    border: 1px solid black;
+    vertical-align: middle;
+    padding: 4px;
+    word-wrap: break-word;
+}
+
+.col1 {
+    width: 26%;
+}
+
+.col2 {
+    width: 38%;
+}
+
+.col3 {
+    width: 36%;
+}
+
+.gray {
+    background-color: #838383;
+    font-weight: bold;
+}
+
+.smallbox {
+    padding: 6px;
+    line-height: 1.4;
+}
+
+.fullrow {
+    width: 100%;
+}
+
+.img-cell img:not(.logo) {
+  width: 90%;
+  display: block;
+  margin: 0 auto;
+}
+
+.logo {
+  width: 150px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.section-title {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    text-align: center;
+}
+
+.row-compact {
+  height: auto;
+}
+
+.row-compact > td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.row-compact .minutes-7col td,
+.row-compact .minutes-7col th {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.minutes-7col {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  height: auto;
+}
+
+/* Solo divisiones internas */
+.minutes-7col td,
+.minutes-7col th {
+  width: 14.2857%;
+  padding: 4px;
+  word-wrap: break-word;
+  border: 1px solid black;
+}
+
+/* Quitar bordes del perímetro */
+.minutes-7col tr:first-child th,
+.minutes-7col tr:first-child td {
+  border-top: 0;
+}
+
+.minutes-7col tr:last-child th,
+.minutes-7col tr:last-child td {
+  border-bottom: 0;
+}
+
+.minutes-7col th:first-child,
+.minutes-7col td:first-child {
+  border-left: 0;
+}
+
+.minutes-7col th:last-child,
+.minutes-7col td:last-child {
+  border-right: 0;
+}
+
+.sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  height: auto;
+}
+
+.sub-table td {
+  border: 1px solid black;
+  padding: 2px;
+  font-size: 10px;
+  text-align: center;
+  height: auto;
+  line-height: 1.2;
+}
+
+.signatures-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  height: auto;
+}
+
+.signatures-table th,
+.signatures-table td {
+  width: 25%;
+  padding: 4px;
+  word-wrap: break-word;
+  border: 1px solid black;
+}
+
+/* Solo divisiones internas para signatures-table */
+.signatures-table tr:first-child th {
+  border-top: 0;
+}
+
+.signatures-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.signatures-table th:first-child,
+.signatures-table td:first-child {
+  border-left: 0;
+}
+
+.signatures-table th:last-child,
+.signatures-table td:last-child {
+  border-right: 0;
+}
+
+.signatures-simple {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  height: auto;
+}
+
+.signatures-simple td {
+  width: 25%;
+  padding: 6px;
+  word-wrap: break-word;
+  border: 1px solid #666;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-size: 11px;
+}
+
+/* Primera fila más alta para las firmas */
+.signatures-simple tr:first-child td {
+  border-top: 0;
+  height: 80px;
+  vertical-align: middle;
+}
+
+/* Solo la fila del medio con texto alineado a la izquierda */
+.signatures-simple tr:nth-child(2) td {
+  text-align: left;
+}
+
+/* Sin bordes del perímetro para signatures-simple */
+.signatures-simple tr:first-child td {
+  border-top: 0;
+}
+
+.signatures-simple tr:last-child td {
+  border-bottom: 0;
+}
+
+.signatures-simple td:first-child {
+  border-left: 0;
+}
+
+.signatures-simple td:last-child {
+  border-right: 0;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Desktop Large (1200px+) */
+@media (min-width: 1200px) {
+    body {
+        font-size: 12px;
+    }
+    
+    table {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .logo {
+        width: 180px;
+    }
+    
+    th, td {
+        padding: 6px;
+    }
+}
+
+/* Desktop Medium (1024px - 1199px) */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    body {
+        font-size: 11px;
+    }
+    
+    table {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .logo {
+        width: 160px;
+    }
+    
+    th, td {
+        padding: 5px;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    body {
+        font-size: 10px;
+        padding: 0.5rem;
+    }
+    
+    table {
+        width: 100%;
+        max-width: 100%;
+        font-size: 10px;
+    }
+    
+    .col1 {
+        width: 25%;
+    }
+    
+    .col2 {
+        width: 50%;
+    }
+    
+    .col3 {
+        width: 25%;
+    }
+    
+    .logo {
+        width: 120px;
+    }
+    
+    th, td {
+        padding: 4px;
+    }
+    
+    .smallbox {
+        padding: 4px;
+        font-size: 9px;
+    }
+}
+
+/* Mobile Large (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+    body {
+        font-size: 9px;
+        padding: 0.3rem;
+    }
+    
+    table {
+        width: 100%;
+        max-width: 100%;
+        font-size: 9px;
+    }
+    
+    .col1 {
+        width: 30%;
+    }
+    
+    .col2 {
+        width: 40%;
+    }
+    
+    .col3 {
+        width: 30%;
+    }
+    
+    .logo {
+        width: 100px;
+    }
+    
+    th, td {
+        padding: 3px;
+    }
+    
+    .smallbox {
+        padding: 3px;
+        font-size: 8px;
+    }
+    
+    .minutes-7col td,
+    .minutes-7col th {
+        padding: 2px;
+        font-size: 8px;
+    }
+    
+    .sub-table td {
+        padding: 1px;
+        font-size: 8px;
+    }
+    
+    .signatures-simple td {
+        padding: 4px;
+        font-size: 9px;
+    }
+}
+
+/* Mobile Small (max-width: 480px) */
+@media (max-width: 480px) {
+    body {
+        font-size: 8px;
+        padding: 0.2rem;
+    }
+    
+    table {
+        width: 100%;
+        max-width: 100%;
+        font-size: 8px;
+    }
+    
+    .col1 {
+        width: 35%;
+    }
+    
+    .col2 {
+        width: 30%;
+    }
+    
+    .col3 {
+        width: 35%;
+    }
+    
+    .logo {
+        width: 80px;
+    }
+    
+    th, td {
+        padding: 2px;
+    }
+    
+    .smallbox {
+        padding: 2px;
+        font-size: 7px;
+    }
+    
+    .minutes-7col td,
+    .minutes-7col th {
+        padding: 1px;
+        font-size: 7px;
+    }
+    
+    .sub-table td {
+        padding: 1px;
+        font-size: 7px;
+    }
+    
+    .signatures-simple td {
+        padding: 3px;
+        font-size: 8px;
+    }
+    
+    .signatures-simple tr:first-child td {
+        height: 60px;
+    }
+}
+
+/* Orientación horizontal en móviles */
+@media (max-width: 767px) and (orientation: landscape) {
+    body {
+        padding: 0.2rem;
+    }
+    
+    table {
+        font-size: 9px;
+    }
+    
+    .logo {
+        width: 70px;
+    }
+    
+    th, td {
+        padding: 2px;
+    }
+    
+    .smallbox {
+        padding: 2px;
+        font-size: 8px;
+    }
+}
+
