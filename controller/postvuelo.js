@@ -1,5 +1,5 @@
 // /controller/postvuelo.js
-import { getLastCompletedFlight, getDrone, savePostflight } from './firebase.js';
+import { getLastCompletedFlight, getDrone, savePostflight, getFlightById } from './firebase.js';
 
 // ====== Helpers ======
 const qs  = (s, r=document) => r.querySelector(s);
@@ -125,29 +125,72 @@ const ids = {
 // ====== Inicialización ======
 async function boot(){
   try{
-    // 1) Traer último vuelo COMPLETADO del dron
-    const f = await getLastCompletedFlight(sn);
-    if(!f || !f.endTime){
-      alert('No hay un vuelo finalizado para registrar post-vuelo. Ve a "Iniciar vuelo".');
-      location.href = '/views/vuelo.html';
-      return;
+    // 1) Primero intentar obtener datos del vuelo desde localStorage (si viene del cronómetro)
+    const lastFlightData = localStorage.getItem('dfr:lastFlightData');
+    let f = null;
+    let useLocalData = false;
+    
+    if (lastFlightData) {
+      const localData = JSON.parse(lastFlightData);
+      if (localData.finished) {
+        // Usar datos del localStorage para el cronómetro
+        f = {
+          id: localStorage.getItem('dfr:currentFlightId'),
+          startTime: localData.startTime,
+          endTime: localData.endTime,
+          durationMin: localData.durationMin,
+          timeline: localData.timeline,
+          status: 'completed'
+        };
+        currentFlight = f;
+        durationMin = Number(f.durationMin) || 0;
+        useLocalData = true;
+      }
     }
-    currentFlight = f;
-    durationMin = Number(f.durationMin || Math.round((new Date(f.endTime)-new Date(f.startTime))/60000)) || 0;
+    
+    // 2) Si no hay datos locales, buscar el último vuelo completado en Firebase
+    if (!f) {
+      f = await getLastCompletedFlight(sn);
+      if(!f || !f.endTime){
+        alert('No hay un vuelo finalizado para registrar post-vuelo. Ve a "Iniciar vuelo".');
+        location.href = '/views/vuelo.html';
+        return;
+      }
+      currentFlight = f;
+      durationMin = Number(f.durationMin || Math.round((new Date(f.endTime)-new Date(f.startTime))/60000)) || 0;
+    }
 
-    // 2) Resumen de vuelo (AUTO)
+    // 3) SIEMPRE obtener los datos del prevuelo desde Firebase (para nombres de tripulación)
+    let preflightData = null;
+    if (useLocalData) {
+      // Si usamos datos locales, necesitamos obtener el prevuelo por separado
+      const flightId = localStorage.getItem('dfr:currentFlightId');
+      if (flightId) {
+        try {
+          const flightData = await getFlightById(sn, flightId);
+          preflightData = flightData?.preflight;
+        } catch (err) {
+          console.warn('No se pudo obtener datos del prevuelo:', err);
+        }
+      }
+    } else {
+      // Si usamos datos de Firebase, el prevuelo ya está incluido
+      preflightData = f?.preflight;
+    }
+
+    // 4) Resumen de vuelo (AUTO)
     setVal('hora_despegue', isoToHHMM(f.startTime));
     setVal('hora_aterrizaje', isoToHHMM(f.endTime));
     setVal('tiempo_vuelo', `${durationMin} min`);
 
-    // 3) Nombres de firmas desde preflight.tripulacion (AUTO)
-    const crew = f?.preflight?.tripulacion || {};
+    // 5) Nombres de firmas desde preflight.tripulacion (AUTO)
+    const crew = preflightData?.tripulacion || {};
     if (nameLider) nameLider.value = crew.lider || '';
     if (namePI)    namePI.value    = crew.piloto_int || '';
     if (namePE)    namePE.value    = crew.piloto_ext || '';
     if (nameIng)   nameIng.value   = crew.ing_vuelo  || '';
 
-    // 4) Datos de aeronave/equipos (AUTO)
+    // 6) Datos de aeronave/equipos (AUTO)
     drone = await getDrone(sn).catch(()=>null);
 
     // Aircraft
@@ -175,7 +218,7 @@ async function boot(){
       setTxt(id.tot, `${m?.minutes ?? 0} min`);
     }
 
-    // 5) Firmas: preparar canvases + modal
+    // 7) Firmas: preparar canvases + modal
     initSignatures();
 
   }catch(err){
@@ -315,8 +358,13 @@ formPost?.addEventListener('submit', async (e)=>{
 
     await savePostflight(sn, flightId, data);
 
-    // Ya quedó el vuelo completo -> limpiar estado y avanzar a reporte
-    localStorage.removeItem('dfr:currentFlightId');
+    // Guardar datos del postvuelo en localStorage para el reporte
+    localStorage.setItem('dfr:postflightData', JSON.stringify(data));
+
+    // NO limpiar los datos aquí - el reporte los necesita
+    // localStorage.removeItem('dfr:currentFlightId');
+    // localStorage.removeItem('dfr:lastFlightData');
+    
     location.href = '/views/report.html';
   }catch(err){
     console.error(err);

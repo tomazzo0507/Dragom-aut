@@ -10,6 +10,7 @@ if(!sn || !flightId) go('./prevuelo.html');
 let segundos = 0;
 let intervalo = null;
 let running = false;
+let finished = false; // Nueva variable para controlar si el vuelo ya terminó
 let startMs = null;
 let timeline = [];
 
@@ -31,6 +32,7 @@ function setBtnToStart(){
   btn.classList.add('modo-iniciar');
   btn.innerHTML = `<i class="ph ph-play"></i> <span>Iniciar</span>`;
   btn.setAttribute('aria-pressed','false');
+  btn.disabled = false;
 }
 
 function setBtnToStop(){
@@ -38,6 +40,17 @@ function setBtnToStop(){
   btn.classList.remove('modo-iniciar');
   btn.innerHTML = `<i class="ph ph-stop"></i> <span>Terminar</span>`;
   btn.setAttribute('aria-pressed','true');
+  btn.disabled = false;
+}
+
+function setBtnToFinished(){
+  btn.classList.remove('terminar', 'modo-iniciar');
+  btn.classList.add('finished');
+  btn.innerHTML = `<i class="ph ph-check-circle"></i> <span>Vuelo Finalizado</span>`;
+  btn.setAttribute('aria-pressed','false');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'not-allowed';
 }
 
 function layoutMarkers(elapsed){
@@ -65,6 +78,8 @@ function addMarker(phase){
 }
 
 async function startFlight(){
+  if (finished) return; // No permitir reiniciar si ya terminó
+  
   running = true;
   startMs = Date.now();
   segundos = 0;
@@ -89,15 +104,33 @@ async function startFlight(){
 async function stopFlight(){
   clearInterval(intervalo);
   running = false;
+  finished = true; // Marcar como terminado
   statusEl.textContent = "vuelo finalizado";
-  setBtnToStart();
+  setBtnToFinished();
 
   const durationMin = Math.round(segundos / 60);
-  await setFlightEnd(sn, flightId, new Date().toISOString(), durationMin, timeline);
+  const endTime = new Date().toISOString();
+  
+  // Guardar datos del vuelo en localStorage para el postvuelo
+  const flightData = {
+    startTime: new Date(startMs).toISOString(),
+    endTime: endTime,
+    durationMin: durationMin,
+    timeline: timeline,
+    finished: true
+  };
+  localStorage.setItem('dfr:lastFlightData', JSON.stringify(flightData));
+  
+  await setFlightEnd(sn, flightId, endTime, durationMin, timeline);
   if (durationMin > 0) await addMinutes(sn, durationMin);
 }
 
 btn?.addEventListener('click', async ()=>{
+  if (finished) {
+    alert('El vuelo ya ha sido finalizado. No se puede reiniciar.');
+    return;
+  }
+  
   if(!running){
     await startFlight();
   }else{
@@ -113,9 +146,37 @@ for(const [id,label] of phases){
   const el = document.getElementById(id);
   el?.addEventListener('click', ()=>{
     if(!running){ alert("Inicia el cronómetro primero"); return; }
+    if(finished){ alert("El vuelo ya ha sido finalizado"); return; }
     statusEl.textContent = `Fase: ${label}`;
     addMarker(label);
   });
 }
+
+// Verificar si ya hay un vuelo terminado al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  const lastFlightData = localStorage.getItem('dfr:lastFlightData');
+  if (lastFlightData) {
+    const data = JSON.parse(lastFlightData);
+    if (data.finished && data.flightId === flightId) {
+      finished = true;
+      segundos = data.durationMin * 60;
+      timeline = data.timeline || [];
+      cronometro.textContent = fmt(segundos);
+      statusEl.textContent = "vuelo finalizado";
+      setBtnToFinished();
+      
+      // Recrear marcadores si existen
+      markersEl.innerHTML = '';
+      timeline.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'marker';
+        el.innerText = `${fmt(item.t)}\n${item.phase}`;
+        markersEl.appendChild(el);
+        const pct = Math.min(100, (item.t / Math.max(1, segundos)) * 100);
+        el.style.left = pct + '%';
+      });
+    }
+  }
+});
 
 setBtnToStart();

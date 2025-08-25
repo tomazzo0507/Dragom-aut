@@ -238,12 +238,18 @@ form?.addEventListener('submit', async (e)=>{
       tarea7: readTask('tarea7'),
       tarea8: readTask('tarea8'),
       tarea9: readTask('tarea9'),
-    }
+    },
+    // Agregar el campo de estado de la aeronave
+    'Describir Aeronave - (Fisuras, Golpes, Delaminaciones)': document.querySelector('textarea[placeholder="Describir Aeronave - (Fisuras, Golpes, Delaminaciones)"]')?.value || null
   };
 
   try{
     const flightId = await ensureFlight(selectedSN, preflight);
     localStorage.setItem('dfr:currentFlightId', flightId);
+    
+    // Guardar datos del prevuelo en localStorage para el reporte
+    localStorage.setItem('dfr:preflightData', JSON.stringify(preflight));
+    
     alert('Pre-vuelo guardado. Dirígete a "Iniciar vuelo".');
     go('./vuelo.html');
   }catch(err){

@@ -3,9 +3,7 @@
 // NOTA: para "crear usuarios" desde /views/register.html usamos invitaciones por email link,
 // sin cerrar la sesión del editor (no existe createUser admin desde cliente).
 
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 
 import {
   getAuth,
@@ -13,7 +11,8 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
-  signOut
+  signOut,
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -33,19 +32,19 @@ const firebaseConfig = {
   measurementId: "G-RJMX0M24GL"
 };
 
-const app  = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-const db   = getFirestore(app);
+const db = getFirestore(app);
 
 // ========== Auth guard util ==========
-export function watchAuth(cb){
-  onAuthStateChanged(auth, async (user)=>{
-    if(!user){ cb(null, null); return; }
-    try{
+export function watchAuth(cb) {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { cb(null, null); return; }
+    try {
       const uref = doc(db, 'users', user.uid);
       const snap = await getDoc(uref);
       cb(user, snap.exists() ? snap.data() : null);
-    }catch(e){
+    } catch (e) {
       console.error('watchAuth error', e);
       cb(user, null);
     }
@@ -55,7 +54,7 @@ export function watchAuth(cb){
 // ========== Invitaciones (sustituye "adminCreateUser") ==========
 // Crea un "usuario invitado": guarda su rol en Firestore y envía magic link por correo.
 // NO cierra la sesión del editor.
-export async function adminCreateUser({ name, email, password, role }){
+export async function adminCreateUser({ name, email, password, role }) {
   // 1) Guarda invitación/rol (si el usuario termina creando la cuenta, este doc se actualizará luego)
   const invitesRef = doc(db, 'invites', email.toLowerCase());
   await setDoc(invitesRef, {
@@ -77,8 +76,8 @@ export async function adminCreateUser({ name, email, password, role }){
 }
 
 // Si el usuario llega por email-link a /index.html se puede completar el sign in:
-export async function completeEmailLinkSignInIfNeeded(){
-  try{
+export async function completeEmailLinkSignInIfNeeded() {
+  try {
     if (isSignInWithEmailLink(auth, location.href)) {
       const url = new URL(location.href);
       let email = url.searchParams.get('email') || window.localStorage.getItem('dfr:pendingEmail');
@@ -106,21 +105,21 @@ export async function completeEmailLinkSignInIfNeeded(){
       // redirige al dashboard
       location.href = '/views/inicio.html';
     }
-  }catch(e){
+  } catch (e) {
     console.error('Email link sign-in error:', e);
   }
 }
 
-export async function logout(){ await signOut(auth); }
+export async function logout() { await signOut(auth); }
 
 // ========== Aeronaves ==========
-export async function getDrone(sn){
+export async function getDrone(sn) {
   const ref = doc(db, 'aircraft', sn);
   const snap = await getDoc(ref);
   return snap.exists() ? snap.data() : null;
 }
 
-export async function createDrone(data){
+export async function createDrone(data) {
   const {
     sn, pn,
     minutes_total = 0,
@@ -143,11 +142,11 @@ export async function createDrone(data){
 }
 
 // ========== Flights ==========
-function flightsCol(sn){
+function flightsCol(sn) {
   return collection(db, 'aircraft', sn, 'flights');
 }
 
-export async function ensureFlight(sn, preflight){
+export async function ensureFlight(sn, preflight) {
   // Crea SIEMPRE un vuelo nuevo (flujo: un preflight -> un vuelo)
   const ref = await addDoc(flightsCol(sn), {
     aircraftSN: sn,
@@ -158,7 +157,7 @@ export async function ensureFlight(sn, preflight){
   return ref.id;
 }
 
-export async function setFlightStart(sn, flightId, iso){
+export async function setFlightStart(sn, flightId, iso) {
   const ref = doc(db, 'aircraft', sn, 'flights', flightId);
   await updateDoc(ref, {
     startTime: iso,
@@ -166,7 +165,7 @@ export async function setFlightStart(sn, flightId, iso){
   });
 }
 
-export async function setFlightEnd(sn, flightId, iso, durationMin, timeline){
+export async function setFlightEnd(sn, flightId, iso, durationMin, timeline) {
   const ref = doc(db, 'aircraft', sn, 'flights', flightId);
   await updateDoc(ref, {
     endTime: iso,
@@ -177,10 +176,10 @@ export async function setFlightEnd(sn, flightId, iso, durationMin, timeline){
 }
 
 // Suma minutos a aeronave + a TODOS los componentes (simple: 1:1 con el vuelo)
-export async function addMinutes(sn, minutes){
+export async function addMinutes(sn, minutes) {
   const ref = doc(db, 'aircraft', sn);
   const snap = await getDoc(ref);
-  if(!snap.exists()) return;
+  if (!snap.exists()) return;
 
   const ac = snap.data();
   const batch = writeBatch(db);
@@ -189,15 +188,15 @@ export async function addMinutes(sn, minutes){
   batch.update(ref, { minutes_total: increment(minutes), lastFlightDate: serverTimestamp() });
 
   // actualiza arrays (si existen)
-  const motors = (ac.motors || []).map(m => ({...m, minutes: (m.minutes||0) + minutes}));
-  const batteries = (ac.batteries || []).map(b => ({...b, minutes: (b.minutes||0) + minutes}));
+  const motors = (ac.motors || []).map(m => ({ ...m, minutes: (m.minutes || 0) + minutes }));
+  const batteries = (ac.batteries || []).map(b => ({ ...b, minutes: (b.minutes || 0) + minutes }));
   batch.update(ref, { motors, batteries });
 
   await batch.commit();
 }
 
 // Guarda postvuelo dentro del mismo vuelo
-export async function savePostflight(sn, flightId, post){
+export async function savePostflight(sn, flightId, post) {
   const ref = doc(db, 'aircraft', sn, 'flights', flightId);
   await updateDoc(ref, {
     postflight: post,
@@ -206,11 +205,11 @@ export async function savePostflight(sn, flightId, post){
 }
 
 // Último vuelo COMPLETADO
-export async function getLastCompletedFlight(sn){
-  const q = query(    
+export async function getLastCompletedFlight(sn) {
+  const q = query(
     flightsCol(sn),
-    where('status','==','completed'),
-    orderBy('endTime','desc'),
+    where('status', '==', 'completed'),
+    orderBy('endTime', 'desc'),
     limit(1)
   );
   const snaps = await getDocs(q);
@@ -218,3 +217,14 @@ export async function getLastCompletedFlight(sn){
   const d = snaps.docs[0];
   return { id: d.id, ...d.data() };
 }
+
+// Obtener vuelo específico por ID
+export async function getFlightById(sn, flightId) {
+  const ref = doc(db, 'aircraft', sn, 'flights', flightId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
+// ===== Re-export para que login/logout importen desde ./firebase.js (solución 1)
+export { onAuthStateChanged, signInWithEmailAndPassword, signOut };

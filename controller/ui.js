@@ -5,6 +5,32 @@ const go = (p) => (location.href = new URL(p, location.href).toString());
 document.addEventListener('DOMContentLoaded', () => {
   const role = sessionStorage.getItem('dfr:role') || 'revisor';
 
+  // ===== FUNCIONALIDAD DEL MENÚ HAMBURGUESA =====
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('backdrop');
+
+  function openMenu() {
+    sidebar?.classList.add('is-open');
+    backdrop?.classList.add('show');
+    hamburger?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeMenu() {
+    sidebar?.classList.remove('is-open');
+    backdrop?.classList.remove('show');
+    hamburger?.setAttribute('aria-expanded', 'false');
+  }
+
+  // Event listeners para menú móvil
+  hamburger?.addEventListener('click', openMenu);
+  backdrop?.addEventListener('click', closeMenu);
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
   // Insertar "Registrar" SOLO si editor
   const menu = document.querySelector('.menu');
   if (menu && role === 'editor') {

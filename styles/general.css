@@ -204,6 +204,11 @@ body {
 @media (max-width: 992px) {
     .hamburger {
         display: flex;
+        transition: transform .2s ease;
+    }
+
+    .hamburger:active {
+        transform: scale(0.95);
     }
 
     .aside {
@@ -211,6 +216,7 @@ body {
         z-index: 50;
         box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
         width: var(--w-aside);
+        transition: left .3s ease;
     }
 
     .aside.is-open {
@@ -235,10 +241,13 @@ body {
         backdrop-filter: saturate(140%) blur(1px);
         display: none;
         z-index: 45;
+        opacity: 0;
+        transition: opacity .3s ease;
     }
 
     .backdrop.show {
         display: block;
+        opacity: 1;
     }
 }
 

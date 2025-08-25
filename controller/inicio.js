@@ -1,8 +1,6 @@
 // /controller/inicio.js
 import { getDrone, createDrone } from './firebase.js';
 
-const go = (p) => (location.href = new URL(p, location.href).toString());
-
 const formSearch = document.getElementById('search-form');
 const inputSN    = document.getElementById('search-sn');
 const results    = document.getElementById('search-results');
@@ -63,7 +61,8 @@ formSearch?.addEventListener('submit', async (e)=>{
     const exists = await getDrone(sn);
     if(exists){
       localStorage.setItem('dfr:selectedDroneSN', sn);
-      go('./views/prevuelo.html');
+      // RUTA ABSOLUTA ✅
+      location.href = '/views/prevuelo.html';
     }else{
       formDrone?.reset();
       if(formDrone?.sn) formDrone.sn.value = sn;
@@ -120,7 +119,8 @@ formDrone?.addEventListener('submit', async (e)=>{
 
     localStorage.setItem('dfr:selectedDroneSN', sn);
     hideModal();
-    go('./views/prevuelo.html');
+    // RUTA ABSOLUTA ✅ (evita /views/views/…)
+    location.href = '/views/prevuelo.html';
   }catch(err){
     console.error(err);
     alert('No se pudo crear la aeronave. Revisa los datos e intenta de nuevo.');

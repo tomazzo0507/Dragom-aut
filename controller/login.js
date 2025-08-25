@@ -6,7 +6,6 @@ const emailInput = document.getElementById('email');
 const passInput  = document.getElementById('password');
 const toggleIcon = document.getElementById('togglePassword');
 
-// Toggle ver/ocultar contraseña
 if (toggleIcon && passInput) {
   toggleIcon.addEventListener('click', () => {
     const isPass = passInput.type === 'password';
@@ -16,12 +15,10 @@ if (toggleIcon && passInput) {
   });
 }
 
-// Login
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = (emailInput?.value || '').trim();
   const pass  = passInput?.value || '';
-
   try {
     await signInWithEmailAndPassword(auth, email, pass);
     location.href = '/views/inicio.html';
@@ -31,7 +28,6 @@ form?.addEventListener('submit', async (e) => {
   }
 });
 
-// Si ya hay sesión, redirige a inicio
 onAuthStateChanged(auth, (user) => {
   if (user) location.href = '/views/inicio.html';
 });
