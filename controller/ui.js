@@ -1,11 +1,11 @@
 // /controller/ui.js
-// Hamburguesa + activar item por URL + menú Registrar para editores
+// Hamburguesa + activar item URL 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
 document.addEventListener('DOMContentLoaded', () => {
   const role = sessionStorage.getItem('dfr:role') || 'revisor';
 
-  // ===== FUNCIONALIDAD DEL MENÚ HAMBURGUESA =====
+  // ===== MENÚ HAMBURGUESA =====
   const hamburger = document.getElementById('hamburger');
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('backdrop');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hamburger?.setAttribute('aria-expanded', 'false');
   }
 
-  // Event listeners para menú móvil
+  // Event listeners menú móvil
   hamburger?.addEventListener('click', openMenu);
   backdrop?.addEventListener('click', closeMenu);
 

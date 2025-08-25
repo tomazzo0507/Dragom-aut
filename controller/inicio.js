@@ -70,7 +70,7 @@ formSearch?.addEventListener('submit', async (e)=>{
       if(results) results.innerHTML = `
         <div class="no-results">
           <p>No se encontró ningún DRAGOM con S/N <strong>${sn}</strong>.</p>
-          <p>Puedes crearlo con el botón del modal.</p>
+          <p>Pero no te preocupes, puedes crearlo usando el botón de 'Agregar aeronave'.</p>
         </div>`;
     }
   }catch(err){
@@ -88,38 +88,57 @@ formDrone?.addEventListener('submit', async (e)=>{
   const sn = formDrone.sn.value.trim();
   const pn = formDrone.pn.value.trim();
 
+  const m1 = (formDrone.m1?.value || '').trim();
+  const m2 = (formDrone.m2?.value || '').trim();
+  const m3 = (formDrone.m3?.value || '').trim();
+  const m4 = (formDrone.m4?.value || '').trim();
+
   const h1 = parseFloat(formDrone.m1h?.value || '0') || 0;
   const h2 = parseFloat(formDrone.m2h?.value || '0') || 0;
   const h3 = parseFloat(formDrone.m3h?.value || '0') || 0;
   const h4 = parseFloat(formDrone.m4h?.value || '0') || 0;
+
+  const b1 = (formDrone.b1?.value || '').trim();
+  const b2 = (formDrone.b2?.value || '').trim();
+
+  const b1c = parseInt(formDrone.b1c?.value || '0', 10) || 0;
+  const b2c = parseInt(formDrone.b2c?.value || '0', 10) || 0;
+
+  // Validar que todos los campos estén diligenciados
+  if (
+    !sn || !pn ||
+    !m1 || !m2 || !m3 || !m4 ||
+    !formDrone.m1h.value || !formDrone.m2h.value || !formDrone.m3h.value || !formDrone.m4h.value ||
+    !b1 || !b2 ||
+    !formDrone.b1c.value || !formDrone.b2c.value
+  ) {
+    alert('Debes diligenciar todos los datos');
+    return;
+  }
 
   const m1min = Math.round(h1 * 60);
   const m2min = Math.round(h2 * 60);
   const m3min = Math.round(h3 * 60);
   const m4min = Math.round(h4 * 60);
 
-  const b1c = parseInt(formDrone.b1c?.value || '0', 10) || 0;
-  const b2c = parseInt(formDrone.b2c?.value || '0', 10) || 0;
-
   try{
     await createDrone({
       sn, pn,
       minutes_total: 0,
       motors: [
-        {pos:1, sn:(formDrone.m1?.value||'').trim(), minutes:m1min},
-        {pos:2, sn:(formDrone.m2?.value||'').trim(), minutes:m2min},
-        {pos:3, sn:(formDrone.m3?.value||'').trim(), minutes:m3min},
-        {pos:4, sn:(formDrone.m4?.value||'').trim(), minutes:m4min},
+        {pos:1, sn:m1, minutes:m1min},
+        {pos:2, sn:m2, minutes:m2min},
+        {pos:3, sn:m3, minutes:m3min},
+        {pos:4, sn:m4, minutes:m4min},
       ],
       batteries: [
-        {n:1, sn:(formDrone.b1?.value||'').trim(), minutes:0, cycles:b1c},
-        {n:2, sn:(formDrone.b2?.value||'').trim(), minutes:0, cycles:b2c},
+        {n:1, sn:b1, minutes:0, cycles:b1c},
+        {n:2, sn:b2, minutes:0, cycles:b2c},
       ],
     });
 
     localStorage.setItem('dfr:selectedDroneSN', sn);
     hideModal();
-    // RUTA ABSOLUTA ✅ (evita /views/views/…)
     location.href = '/views/prevuelo.html';
   }catch(err){
     console.error(err);

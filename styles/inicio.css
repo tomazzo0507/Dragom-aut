@@ -10,6 +10,25 @@
     flex-direction: column;
   }
 
+
+  #logout-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: var(--text);
+    text-decoration: none;
+    border: none;
+    line-height: 1.2;
+    cursor: pointer;
+    background: var(--bg);
+  }
+
+  #logout-btn:hover {
+    background: var(--hover);
+  }
+
   /* Encabezado */
   .page-header {
     margin-bottom: 18px;
