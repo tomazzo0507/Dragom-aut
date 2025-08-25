@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const menu = document.querySelector('.menu');
   if (menu && role === 'editor') {
     const a = document.createElement('a');
-    a.href = new URL('./views/register.html', location.href).toString();
+    a.href = '/views/register.html';
     a.className = 'menu_item';
     a.innerHTML = `<i class="fa-solid fa-user-plus"></i><span class="label">Registrar</span>`;
     menu.appendChild(a);

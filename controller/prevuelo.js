@@ -66,7 +66,6 @@ function fillGeneralInfo(){
     if (inpFecha)  inpFecha.value = `${yyyy}-${mm}-${dd}`;
     if (inpHora)   inpHora.value  = `${hh}:${mi}`;
     if (inpLugar)  inpLugar.value = 'Obteniendo ubicación…';
-    if (inpTiempo) inpTiempo.value= '30 min';
   }catch{}
 }
 
@@ -91,6 +90,33 @@ async function getCoords(){
 function degToCardinal(deg){
   const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
   return dirs[Math.round(deg/22.5) % 16];
+}
+
+// Función auxiliar para encontrar el índice más cercano en datos horarios
+function findClosestHourlyIndex(hourlyTimes, currentTime, maxDiffHours = 2) {
+  if (!hourlyTimes || !currentTime) return -1;
+  
+  // Buscar coincidencia exacta primero
+  let idx = hourlyTimes.indexOf(currentTime);
+  if (idx !== -1) return idx;
+  
+  // Si no hay coincidencia exacta, buscar el más cercano
+  const currentDate = new Date(currentTime);
+  let closestIdx = -1;
+  let minDiff = Infinity;
+  
+  for (let i = 0; i < hourlyTimes.length; i++) {
+    const hourlyDate = new Date(hourlyTimes[i]);
+    const diff = Math.abs(currentDate - hourlyDate);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestIdx = i;
+    }
+  }
+  
+  // Usar el más cercano si está dentro del límite de tiempo
+  const maxDiffMs = maxDiffHours * 60 * 60 * 1000;
+  return (closestIdx !== -1 && minDiff <= maxDiffMs) ? closestIdx : -1;
 }
 
 async function fetchWeather(lat, lon){
@@ -137,17 +163,40 @@ async function autoFillWeather(lat, lon){
 
     const cur = meteo.current || {};
 
+    // Mejorada: Buscar precipitación con lógica más robusta
     let precipProb = null;
     if (meteo?.hourly?.time && meteo.hourly.precipitation_probability) {
-      const idx = meteo.hourly.time.indexOf(cur.time);
+      const idx = findClosestHourlyIndex(meteo.hourly.time, cur.time);
       precipProb = idx >= 0 ? meteo.hourly.precipitation_probability[idx] : null;
+      
+      // Log de depuración
+      if (idx === -1) {
+        console.log('No se encontró índice cercano para precipitación. Tiempo actual:', cur.time);
+      } else {
+        console.log('Índice encontrado para precipitación:', idx, 'Valor:', precipProb);
+      }
+    }
+    
+    // Fallback: Si no hay datos horarios, intentar usar datos actuales
+    if (precipProb === null && cur.precipitation !== undefined) {
+      // Convertir precipitación actual a probabilidad aproximada
+      // Si hay precipitación actual, asumir alta probabilidad
+      precipProb = cur.precipitation > 0 ? 80 : 0;
+      console.log('Usando fallback de precipitación actual:', cur.precipitation, '→', precipProb);
     }
 
     let visKmStr = null;
     if (meteo?.hourly?.time && meteo.hourly.visibility) {
-      const idx = meteo.hourly.time.indexOf(cur.time);
+      const idx = findClosestHourlyIndex(meteo.hourly.time, cur.time);
       const visM = idx >= 0 ? meteo.hourly.visibility[idx] : null;
       if (visM != null) visKmStr = `${(visM/1000).toFixed(1)} km`;
+      
+      // Log de depuración
+      if (idx === -1) {
+        console.log('No se encontró índice cercano para visibilidad. Tiempo actual:', cur.time);
+      } else {
+        console.log('Índice encontrado para visibilidad:', idx, 'Valor:', visM, 'km');
+      }
     }
 
     if (inpViento && cur.wind_speed_10m != null)  inpViento.value = `${cur.wind_speed_10m} m/s`;
