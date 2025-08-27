@@ -225,11 +225,13 @@
 }
 
 .firma-canvas {
-  width: 100%;
+  width: 90%;
   height: 160px;
   background: #ffffff;
   border: 1px dashed #e5e7eb;
   border-radius: 10px;
+  margin: 0 auto;
+  display: block;
 }
 
 /* Botón móvil para abrir modal de firma */
@@ -329,11 +331,13 @@
 }
 
 .modal-firma-canvas {
-  width: 100%;
+  width: 90%;
   height: 240px;
   background: #ffffff;
   border: 1px dashed #e5e7eb;
   border-radius: 10px;
+  margin: 0 auto;
+  display: block;
 }
 
 .modal-firma-btns {

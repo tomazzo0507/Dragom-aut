@@ -1,7 +1,71 @@
 // /controller/inicio.js
 import { getDrone, createDrone } from './firebase.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+// ====== Sistema de Carga ======
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingBar = document.getElementById('loading-bar');
+const loadingText = document.getElementById('loading-text');
+
+function updateLoading(progress, text) {
+  if (loadingBar) loadingBar.style.width = `${progress}%`;
+  if (loadingText) loadingText.textContent = text;
+}
+
+function hideLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('hidden');
+    setTimeout(() => {
+      loadingOverlay.style.display = 'none';
+    }, 500);
+  }
+}
+
+// ====== Inicialización con carga ======
+async function initializeApp() {
+  try {
+    updateLoading(10, 'Verificando autenticación...');
+    
+    // Esperar a que se complete la verificación de autenticación
+    await new Promise(resolve => {
+      const checkAuth = () => {
+        const role = sessionStorage.getItem('dfr:role');
+        if (role) {
+          resolve();
+        } else {
+          setTimeout(checkAuth, 100);
+        }
+      };
+      checkAuth();
+    });
+    
+    updateLoading(30, 'Cargando interfaz...');
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    updateLoading(50, 'Configurando navegación...');
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    updateLoading(70, 'Preparando formularios...');
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    updateLoading(90, 'Finalizando...');
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    updateLoading(100, '¡Listo!');
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    hideLoading();
+    
+    // Inicializar la aplicación después de ocultar el loading
+    initializeAppLogic();
+    
+  } catch (error) {
+    console.error('Error durante la inicialización:', error);
+    updateLoading(100, 'Error al cargar');
+    setTimeout(hideLoading, 2000);
+  }
+}
+
+function initializeAppLogic() {
   const formSearch = document.getElementById('search-form');
   const inputSN    = document.getElementById('search-sn');
 
@@ -63,12 +127,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ===== Mostrar/ocultar botón "Agregar aeronave" según rol =====
-  (function toggleAddButtonByRole(){
+  function toggleAddButtonByRole(){
     const role = sessionStorage.getItem('dfr:role');
     if (role !== 'editor') {
       btnAdd?.remove();
     }
-  })();
+  }
+  
+  // Ejecutar después de que se complete la carga
+  toggleAddButtonByRole();
 
   // ===== Abrir modal manualmente (solo editores lo ven) =====
   if (btnAdd) {
@@ -173,4 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Inicializa el gate de navegación
   gateSidebarUntilSelected();
-});
+}
+
+// ====== Iniciar aplicación ======
+document.addEventListener('DOMContentLoaded', initializeApp);
