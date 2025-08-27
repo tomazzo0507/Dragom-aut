@@ -2,7 +2,7 @@
 
 # DRAGOM Flight Report System
 
-Sistema completo de registro de vuelos UAV-DRAGOM con integración de Firebase y Firestore. Aplicación web SPA para gestión integral de aeronaves, vuelos y reportes.
+Sistema completo de registro de vuelos UAV-DRAGOM con integración de Firebase y Firestore. Aplicación web para gestión integral de aeronaves, vuelos y reportes.
 
 ## 🚀 Características Implementadas
 
