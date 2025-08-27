@@ -141,6 +141,29 @@ export async function createDrone(data) {
   });
 }
 
+// Actualizar datos de aeronave (mergea campos)
+export async function updateDrone(sn, partial) {
+  const ref = doc(db, 'aircraft', sn);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('not_found');
+  await setDoc(ref, partial, { merge: true });
+}
+
+// Incrementar en +1 los ciclos de una batería (n = 1 | 2)
+export async function addBatteryCycle(sn, batteryNumber) {
+  const ref = doc(db, 'aircraft', sn);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error('not_found');
+  const data = snap.data();
+  const idx = batteryNumber === 2 ? 1 : 0;
+  const batteries = Array.isArray(data.batteries) ? [...data.batteries] : [];
+  const current = batteries[idx] || { n: batteryNumber, sn: '', minutes: 0, cycles: 0 };
+  const updated = { ...current, cycles: (current.cycles || 0) + 1 };
+  batteries[idx] = updated;
+  await updateDoc(ref, { batteries });
+  return updated.cycles;
+}
+
 // ========== Flights ==========
 function flightsCol(sn) {
   return collection(db, 'aircraft', sn, 'flights');

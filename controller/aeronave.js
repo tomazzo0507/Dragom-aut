@@ -1,5 +1,5 @@
 // /controller/aeronave.js
-import { getDrone } from './firebase.js';
+import { getDrone, updateDrone, addBatteryCycle } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // ===== Roles =====
@@ -35,6 +35,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     mot2_sn: $('mot2_sn'),
     mot3_sn: $('mot3_sn'),
     mot4_sn: $('mot4_sn'),
+    // nuevos máximos
+    bat1_max_ciclos: $('bat1_max_ciclos'),
+    bat2_max_ciclos: $('bat2_max_ciclos'),
+    mot1_max_h: $('mot1_max_h'),
+    mot2_max_h: $('mot2_max_h'),
+    mot3_max_h: $('mot3_max_h'),
+    mot4_max_h: $('mot4_max_h'),
   };
 
   let currentAircraft = null;
@@ -112,6 +119,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="kv">S/N: ${batteries[0]?.sn || '-'}</div>
             <div class="kv">Tiempo: ${batteries[0]?.minutes || 0} min</div>
             <div class="kv">Ciclos: ${batteries[0]?.cycles || 0}</div>
+            <div class="card__foot" style="justify-content:flex-start; gap:6px;">
+              <button class="btn btn-cycle only-editor" data-action="cycle-b1"><i class="ph ph-plus"></i> Ciclo</button>
+            </div>
           </div>
 
           <div class="block">
@@ -119,6 +129,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="kv">S/N: ${batteries[1]?.sn || '-'}</div>
             <div class="kv">Tiempo: ${batteries[1]?.minutes || 0} min</div>
             <div class="kv">Ciclos: ${batteries[1]?.cycles || 0}</div>
+            <div class="card__foot" style="justify-content:flex-start; gap:6px;">
+              <button class="btn btn-cycle only-editor" data-action="cycle-b2"><i class="ph ph-plus"></i> Ciclo</button>
+            </div>
           </div>
 
           <div class="block">
@@ -148,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Llenar formulario con datos actuales
       F.ac_sn.value = data.sn || '';
       F.ac_total.value = data.minutes_total || '';
-      F.ac_max_h.value = '';
+      if (F.ac_max_h) F.ac_max_h.value = '';
       
       // Baterías
       const batteries = data.batteries || [];
@@ -158,6 +171,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       F.bat2_sn.value = batteries[1]?.sn || '';
       F.bat2_total.value = batteries[1]?.minutes || '';
       F.bat2_ciclos.value = batteries[1]?.cycles || '';
+      // máximos baterías si existen
+      const bmax = data.batteries_max_cycles || [];
+      if (F.bat1_max_ciclos) F.bat1_max_ciclos.value = bmax[0] ?? '';
+      if (F.bat2_max_ciclos) F.bat2_max_ciclos.value = bmax[1] ?? '';
       
       // Motores
       const motors = data.motors || [];
@@ -165,6 +182,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       F.mot2_sn.value = motors[1]?.sn || '';
       F.mot3_sn.value = motors[2]?.sn || '';
       F.mot4_sn.value = motors[3]?.sn || '';
+      // máximos motores si existen (horas)
+      const mmax = data.motors_max_hours || [];
+      if (F.mot1_max_h) F.mot1_max_h.value = mmax[0] ?? '';
+      if (F.mot2_max_h) F.mot2_max_h.value = mmax[1] ?? '';
+      if (F.mot3_max_h) F.mot3_max_h.value = mmax[2] ?? '';
+      if (F.mot4_max_h) F.mot4_max_h.value = mmax[3] ?? '';
     }
   }
 
@@ -182,13 +205,50 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
 
   // Submit editar
-  form?.addEventListener('submit', (e) => {
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (role !== 'editor') return alert('Esta acción requiere rol Editor.');
 
-    // Aquí iría la lógica para actualizar la aeronave en Firebase
-    alert('Función de edición en desarrollo. Los cambios se guardarán próximamente.');
-    closeModal();
+    const sn = (F.ac_sn.value || '').trim();
+    if (!sn) { alert('S/N es requerido'); return; }
+
+    const minutes_total = Number(F.ac_total.value || 0) || 0;
+
+    const batteries = [
+      { n:1, sn:(F.bat1_sn.value||'').trim(), minutes:Number(F.bat1_total.value||0)||0, cycles:Number(F.bat1_ciclos.value||0)||0 },
+      { n:2, sn:(F.bat2_sn.value||'').trim(), minutes:Number(F.bat2_total.value||0)||0, cycles:Number(F.bat2_ciclos.value||0)||0 },
+    ];
+
+    const motors = [
+      { pos:1, sn:(F.mot1_sn.value||'').trim(), minutes: currentAircraft?.motors?.[0]?.minutes || 0 },
+      { pos:2, sn:(F.mot2_sn.value||'').trim(), minutes: currentAircraft?.motors?.[1]?.minutes || 0 },
+      { pos:3, sn:(F.mot3_sn.value||'').trim(), minutes: currentAircraft?.motors?.[2]?.minutes || 0 },
+      { pos:4, sn:(F.mot4_sn.value||'').trim(), minutes: currentAircraft?.motors?.[3]?.minutes || 0 },
+    ];
+
+    try {
+      await updateDrone(sn, { sn, minutes_total, batteries, motors,
+        // persistir máximos
+        batteries_max_cycles: [
+          Number(F.bat1_max_ciclos?.value || 0) || 0,
+          Number(F.bat2_max_ciclos?.value || 0) || 0,
+        ],
+        motors_max_hours: [
+          Number(F.mot1_max_h?.value || 0) || 0,
+          Number(F.mot2_max_h?.value || 0) || 0,
+          Number(F.mot3_max_h?.value || 0) || 0,
+          Number(F.mot4_max_h?.value || 0) || 0,
+        ]
+      });
+      alert('Aeronave actualizada.');
+      closeModal();
+      // refrescar vista
+      currentAircraft = await getDrone(sn);
+      renderAircraft(currentAircraft);
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo actualizar la aeronave.');
+    }
   });
 
   // Delegación: Editar
@@ -204,6 +264,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const action = actionBtn.getAttribute('data-action');
     if (action === 'edit' && currentAircraft) {
       openModal('edit', currentAircraft);
+      return;
+    }
+    if (action === 'cycle-b1' || action === 'cycle-b2') {
+      const num = action === 'cycle-b1' ? 1 : 2;
+      (async ()=>{
+        try{
+          const sn = localStorage.getItem('dfr:selectedDroneSN');
+          await addBatteryCycle(sn, num);
+          currentAircraft = await getDrone(sn);
+          renderAircraft(currentAircraft);
+        }catch(err){
+          console.error(err);
+          alert('No se pudo incrementar el ciclo.');
+        }
+      })();
     }
   });
 

@@ -44,7 +44,7 @@ const setHTML = (id, html) => {
   set('pv_hora', pre.general?.hora);
   set('pv_tiempo_est', pre.general?.tiempo_estimado);
   set('pv_altitud_agl', ''); // Campo no presente en el formulario
-  set('pv_proposito', ''); // Campo no presente en el formulario
+  set('pv_proposito', pre.general?.proposito || '');
   set('pv_codigo', ''); // Campo no presente en el formulario
 
   // Condiciones Atmosféricas

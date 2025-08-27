@@ -110,6 +110,7 @@ const namePI       = document.getElementById('nom_piloto_int');
 const _noop = null;
 const namePE       = document.getElementById('nom_piloto_ext');
 const nameIng      = document.getElementById('nom_ingeVu');
+const notasTextarea= document.getElementById('post_notas_vuelo');
 
 // Equip ids (S/N y minutos)
 const ids = {
@@ -182,6 +183,33 @@ async function boot(){
     setVal('hora_despegue', isoToHHMM(f.startTime));
     setVal('hora_aterrizaje', isoToHHMM(f.endTime));
     setVal('tiempo_vuelo', `${durationMin} min`);
+
+    // 4.b) Autocompletar Notas con rangos de fases del cronómetro
+    try {
+      const phases = Array.isArray(f.timeline) ? f.timeline : [];
+      const startISO = f.startTime;
+      const endISO = f.endTime;
+      function fmtMMSS(totalSeconds){
+        const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const s = String(totalSeconds % 60).padStart(2, '0');
+        return `${m}:${s}`;
+      }
+      const totalSeconds = Math.max(0, Math.round((new Date(endISO) - new Date(startISO)) / 1000));
+      const lines = [];
+      for (let i = 0; i < phases.length; i++) {
+        const cur = phases[i];
+        const next = phases[i+1];
+        const from = Math.max(0, Math.floor(cur.t || 0));
+        const to = Math.max(from, Math.floor(next?.t ?? totalSeconds));
+        lines.push(`Fase ${cur.phase} (${fmtMMSS(from)}) - (${fmtMMSS(to)})`);
+      }
+      const joined = lines.join(' / ');
+      if (notasTextarea && !notasTextarea.value) {
+        notasTextarea.value = joined;
+      }
+    } catch (e) {
+      console.warn('No se pudo autocompletar Notas con fases:', e);
+    }
 
     // 5) Nombres de firmas desde preflight.tripulacion (AUTO)
     const crew = preflightData?.tripulacion || {};

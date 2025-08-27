@@ -13,6 +13,7 @@ const inpHora    = $('Hora');
 const inpLugar   = $('Lugar');
 const inpMatric  = $('Matrícula');
 const inpTiempo  = $('Tiempo estimado de vuelo');
+const inpProposito = $('Propósito de vuelo');
 
 // METEO
 const inpViento    = $('Velocidad del viento');
@@ -249,6 +250,7 @@ form?.addEventListener('submit', async (e)=>{
       lugar:   inpLugar?.value || null,
       matricula: inpMatric?.value || null,
       tiempo_estimado: inpTiempo?.value || null,
+      proposito: inpProposito?.value || null,
     },
     meteo: {
       viento_ms:         inpViento?.value || null,
