@@ -15,8 +15,8 @@
 
 /* Secciones (row) */
 .row{
-  background: linear-gradient(180deg, #17171d 0%, #121218 100%);
-  border:1px solid #1f1f28;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  border:1px solid #7e7e7e;
   border-radius:14px;
   padding:16px;
 }
@@ -32,9 +32,9 @@
 }
 .row hr{
   border:none;
-  border-top:1px solid #23232d;
+  border-top:1px solid #000000;
   margin: 6px 0 14px;
-  opacity:.6;
+  opacity:.9;
 }
 
 /* Grids por sección */
@@ -68,17 +68,17 @@
   width:100%;
   padding:12px 12px;
   border-radius:12px;
-  border:1px solid #23232d;
-  background:#191922;
+  border:1px solid #a1a1a1;
+  background:#ffffff;
   color:var(--text);
   outline:none;
   transition:border-color .15s ease, box-shadow .15s ease;
 }
 .info textarea{ resize: vertical; min-height:110px; }
-.info input::placeholder, .info textarea::placeholder{ color:#a7aabb; opacity:.75; }
+.info input::placeholder, .info textarea::placeholder{ color:#9ca3af; opacity:.8; }
 .info input:focus, .info textarea:focus{
-  border-color: rgba(187,163,255,.6);
-  box-shadow:0 0 0 4px rgba(187,163,255,.12);
+  border-color: rgba(59,130,246,.6);
+  box-shadow:0 0 0 4px rgba(59,130,246,.12);
 }
 
 /* Tareas: fila + segmented radios */
@@ -89,8 +89,8 @@
   gap:12px;
   padding:12px;
   border-radius:12px;
-  background:#17171d;
-  border:1px solid #1f1f28;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
 }
 .tarea-item > label{
   font-size:14px;
@@ -101,10 +101,10 @@
 /* Segmented control ✅ ❌ N/A */
 .checkbox-group{
   display:inline-flex;
-  border:1px solid #23232d;
+  border:1px solid #e5e7eb;
   border-radius:999px;
   overflow:hidden;
-  background:#191922;
+  background:#ffffff;
 }
 .checkbox-group input{ display:none; }
 .checkbox-group label{
@@ -145,10 +145,9 @@
 #tarea9_no:checked + label,
 #tarea9_na:checked + label{
   background: var(--brand-10);
-  outline:1px solid rgba(187,163,255,.25);
+  outline:1px solid rgba(59,130,246,.25);
 }
 
-/* Botones finales (usa tus clases actuales) */
 .botones{
   display:flex;
   gap:10px;
@@ -168,17 +167,18 @@
   transition: transform .06s ease, box-shadow .15s ease, filter .15s ease, background .15s ease, color .15s ease;
 }
 .aceptar{
-  background: linear-gradient(180deg, rgba(187,163,255,.95), rgba(187,163,255,.85));
-  color:#17171d;
-  box-shadow: 0 10px 28px rgba(187,163,255,.25);
+  background: linear-gradient(180deg, rgba(59,130,246,.96), rgba(59,130,246,.86));
+  color:#ffffff;
+  border: transparent;
+  box-shadow: 0 10px 28px rgba(59,130,246,.25);
 }
-.aceptar:hover{ filter:saturate(1.04); box-shadow:0 12px 30px rgba(187,163,255,.33); }
+.aceptar:hover{ filter:saturate(1.04); box-shadow:0 12px 30px rgba(59,130,246,.33); }
 .aceptar:active{ transform:translateY(1px); }
 
 .cancelar{
-  background:#191922;
+  background:#ffffff;
   color:var(--text);
-  border:1px solid #23232d;
+  border:1px solid #e5e7eb;
 }
-.cancelar:hover{ background:#1f1f28; }
+.cancelar:hover{ background:var(--hover); }
 .cancelar:active{ transform:translateY(1px); }

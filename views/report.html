@@ -19,9 +19,9 @@
       <td class="col3 smallbox">
         <strong>Aeronave: UAV-Dragom</strong><br>
         <hr>
-        <strong>P/N: </strong>Original<br>
+        <strong>P/N: </strong><span id="pv_partnum"></span><br>
         <hr>
-        <strong>S/N: </strong>123456789
+        <strong>S/N: </strong><span id="pv_serialnum"></span>
       </td>
     </tr>
 
@@ -109,31 +109,31 @@
       <td colspan="3" class="gray">EJECUCIÓN DE TAREAS PRE VUELO</td>
     </tr>
     <tr>
-      <td colspan="3">Ensamble y Chequeo de Plataforma <span id="pv_tarea1"></span></td>
+      <td colspan="3">Ensamble y Chequeo de Plataforma - <span id="pv_tarea1"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Ensamble y Calibración GDT <span id="pv_tarea2"></span></td>
+      <td colspan="3">Ensamble y Calibración GDT - <span id="pv_tarea2"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Alistamiento GCS Primaria y Auxiliar <span id="pv_tarea3"></span></td>
+      <td colspan="3">Alistamiento GCS Primaria y Auxiliar - <span id="pv_tarea3"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Inicialización y Conexión <span id="pv_tarea4"></span></td>
+      <td colspan="3">Inicialización y Conexión - <span id="pv_tarea4"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Elaboración y Carga de Plan de Vuelo <span id="pv_tarea5"></span></td>
+      <td colspan="3">Elaboración y Carga de Plan de Vuelo - <span id="pv_tarea5"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Chequeo de Baterías y Sistemas de la Plataforma <span id="pv_tarea6"></span></td>
+      <td colspan="3">Chequeo de Baterías y Sistemas de la Plataforma - <span id="pv_tarea6"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Despegue y Ejecución de Misión <span id="pv_tarea7"></span></td>
+      <td colspan="3">Despegue y Ejecución de Misión - <span id="pv_tarea7"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Aterrizaje y Recuperación <span id="pv_tarea8"></span></td>
+      <td colspan="3">Aterrizaje y Recuperación - <span id="pv_tarea8"></span></td>
     </tr>
     <tr>
-      <td colspan="3">Chequeo Post Vuelo y Notas de Vuelo <span id="pv_tarea9"></span></td>
+      <td colspan="3">Chequeo Post Vuelo y Notas de Vuelo - <span id="pv_tarea9"></span></td>
     </tr>
 
     <!-- Sección: RESUMEN -->
@@ -165,9 +165,9 @@
       <td class="col3 smallbox">
         <strong>Aeronave: UAV-Dragom</strong><br>
         <hr>
-        <strong>P/N: </strong>Original<br>
+        <strong>P/N: </strong><span id="pv_partnum"></span><br>
         <hr>
-        <strong>S/N: </strong>123456789
+        <strong>S/N: </strong><span id="pv_serialnum"></span>
       </td>
     </tr>
 
@@ -362,10 +362,13 @@
 
   </table>
 
-  <!-- Botón imprimir -->
+  <!-- Botón imprimir 
+
   <button id="btnPrint" class="btn-print">
     <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
   </button>
+  
+  -->
 
   <script type="module" src="/controller/ui.js"></script>
   <script type="module" src="/controller/report.js"></script>

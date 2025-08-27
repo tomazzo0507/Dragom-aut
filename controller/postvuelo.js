@@ -26,8 +26,8 @@ function ensureCanvasScale(canvas){
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.strokeStyle = '#eaeaf0';
-  ctx.fillStyle   = '#0f0f12';
+  ctx.strokeStyle = '#000000';
+  ctx.fillStyle   = '#ffffff';
   ctx.fillRect(0, 0, cssW, cssH);
   return ctx;
 }

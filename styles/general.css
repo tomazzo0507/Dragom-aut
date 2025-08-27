@@ -9,17 +9,21 @@
     font-size: 15px;
     text-decoration: none;
     scroll-behavior: smooth;
+
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
 
 :root {
-    --bg: #0f0f12;
-    --panel: #141418;
-    --muted: #8a8f98;
-    --text: #eaeaf0;
-    --brand: #bba3ff;
-    /* toque lila como la referencia */
-    --brand-10: rgba(187, 163, 255, .12);
-    --hover: #1b1b22;
+    --bg: #f6f9fc;
+    --panel: #ffffff;
+    --muted: #6b7280;
+    --text: #0f172a;
+    --brand: #3b82f6;
+    --brand-10: rgba(59, 130, 246, .12);
+    --hover: #c2c2c2;
     --radius: 16px;
     --w-aside: 260px;
     --w-aside-collapsed: 84px;
@@ -40,15 +44,14 @@ body {
     transition: padding-left .25s ease;
 }
 
-/* Sidebar fijo en desktop */
 .aside {
     position: fixed;
     top: 0;
     left: 0;
     height: 100dvh;
     width: var(--w-aside);
-    background: linear-gradient(180deg, #17171d 0%, #121218 100%);
-    border-right: 1px solid #1f1f28;
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+    border-right: 1px solid #e5e7eb;
     padding: 14px;
     transition: width .25s ease, left .25s ease;
     overflow-y: auto;
@@ -69,7 +72,7 @@ body {
     padding: 10px;
     border-radius: 12px;
     background: var(--brand-10);
-    border: 1px solid rgba(187, 163, 255, .25);
+    border: 1px solid rgba(59, 130, 246, .25);
 }
 
 .imgdragomside {
@@ -77,7 +80,7 @@ body {
     height: 40px;
     border-radius: 12px;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, .06);
+    border: 1px solid rgba(0, 0, 0, .06);
 }
 
 .nom {
@@ -158,7 +161,7 @@ body {
 
 .menu a.active {
     background: var(--brand-10);
-    outline: 1px solid rgba(187, 163, 255, .25);
+    outline: 1px solid rgba(59, 130, 246, .25);
 }
 
 .menu a.active i {
@@ -169,7 +172,7 @@ body {
 .workspace {
     margin-top: auto;
     padding-top: 8px;
-    border-top: 1px dashed #23232d;
+    border-top: 1px dashed #e5e7eb;
 }
 
 .hamburger {
@@ -179,9 +182,9 @@ body {
     z-index: 40;
     width: 42px;
     height: 42px;
-    border: 1px solid #262633;
-    background: #17171d;
-    color: #e7e7ef;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    color: #0f172a;
     border-radius: 12px;
     display: none;
     align-items: center;
@@ -196,8 +199,11 @@ body {
 .main {
     flex: 1;
     min-width: 0;
-    /* evita desbordes por contenido ancho */
     padding: 24px;
+}
+
+.spacio {
+    display: none;
 }
 
 /* ===== MÓVIL ===== */
@@ -207,6 +213,10 @@ body {
         transition: transform .2s ease;
     }
 
+    .spacio {
+        display: block;
+    }
+
     .hamburger:active {
         transform: scale(0.95);
     }
@@ -214,7 +224,7 @@ body {
     .aside {
         left: -110%;
         z-index: 50;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+        box-shadow: 0 20px 60px rgba(2, 6, 23, .12);
         width: var(--w-aside);
         transition: left .3s ease;
     }
@@ -237,7 +247,7 @@ body {
         content: "";
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, .4);
+        background: rgba(2, 6, 23, .25);
         backdrop-filter: saturate(140%) blur(1px);
         display: none;
         z-index: 45;

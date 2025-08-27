@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.appendChild(a);
   }
 
-  // Bloquear items hasta elegir dron (en todas las páginas excepto /inicio y /register)
+  // Bloquear items excepto /inicio y /register
   const here = location.pathname;
   const isInicio   = /\/views\/inicio\.html$/.test(here);
   const isRegister = /\/views\/register\.html$/.test(here);

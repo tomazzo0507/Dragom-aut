@@ -19,7 +19,7 @@
   <!-- Hamburguesa / Backdrop -->
   <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="sidebar">
     <i class="fas fa-bars"></i>
-  </button>
+  </button><br class="spacio"><br class="spacio"><br class="spacio">
   <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
   <div class="layout">
@@ -80,20 +80,7 @@
         <p class="page-sub">Busca por <strong>S/N</strong>, visualiza datos y (si eres Editor) gestiona aeronaves.</p>
       </header>
 
-      <!-- Barra superior: búsqueda + acciones -->
-      <div class="topbar">
-        <form class="searchbar" id="search-form" autocomplete="off">
-          <i class="ph ph-magnifying-glass"></i>
-          <input id="search-sn" class="search-input" type="text" placeholder="Buscar por S/N (Ej: DGM-2024-001234)" aria-label="Buscar por S/N"/>
-          <button class="search-btn" type="submit">Buscar</button>
-        </form>
-
-        <div class="actions">
-          <button class="btn btn-main only-editor" id="btn-add">
-            <i class="ph ph-plus"></i> Agregar aeronave
-          </button>
-        </div>
-      </div>
+      
 
       <!-- Resultados -->
       <section id="aircraft-list" class="grid"></section>
@@ -110,63 +97,51 @@
         </button>
       </div>
       <form id="aircraft-form" class="modal__body">
-        <div class="form-grid">
-          <div class="field">
-            <label for="ac_sn">S/N (Aircraft)</label>
-            <input id="ac_sn" name="ac_sn" type="text" placeholder="DGM-2024-000001" required />
-          </div>
-          <div class="field">
-            <label for="ac_mision">Duración misión (min)</label>
-            <input id="ac_mision" name="ac_mision" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="ac_total">Tiempo total vuelo (min)</label>
-            <input id="ac_total" name="ac_total" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="ac_max_h">Tiempo Máximo (horas)</label>
-            <input id="ac_max_h" name="ac_max_h" type="number" min="0" placeholder="0" />
-          </div>
-        </div>
+                 <div class="form-grid">
+           <div class="field">
+             <label for="ac_sn">S/N (Aircraft)</label>
+             <input id="ac_sn" name="ac_sn" type="text" placeholder="DGM-2024-000001" required />
+           </div>
+           <div class="field">
+             <label for="ac_total">Tiempo total vuelo (min)</label>
+             <input id="ac_total" name="ac_total" type="number" min="0" placeholder="0" />
+           </div>
+           <div class="field">
+             <label for="ac_max_h">Tiempo Máximo (horas)</label>
+             <input id="ac_max_h" name="ac_max_h" type="number" min="0" placeholder="0" />
+           </div>
+         </div>
 
-        <div class="subttl">Baterías</div>
-        <div class="form-grid">
-          <div class="field">
-            <label for="bat1_sn">Batería 1 - S/N</label>
-            <input id="bat1_sn" name="bat1_sn" type="text" placeholder="BAT-001" />
-          </div>
-          <div class="field">
-            <label for="bat1_mision">Misión (min)</label>
-            <input id="bat1_mision" name="bat1_mision" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="bat1_total">Total (min)</label>
-            <input id="bat1_total" name="bat1_total" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="bat1_ciclos">Ciclos de carga</label>
-            <input id="bat1_ciclos" name="bat1_ciclos" type="number" min="0" placeholder="0" />
-          </div>
-        </div>
+                 <div class="subttl">Baterías</div>
+         <div class="form-grid">
+           <div class="field">
+             <label for="bat1_sn">Batería 1 - S/N</label>
+             <input id="bat1_sn" name="bat1_sn" type="text" placeholder="BAT-001" />
+           </div>
+           <div class="field">
+             <label for="bat1_total">Total (min)</label>
+             <input id="bat1_total" name="bat1_total" type="number" min="0" placeholder="0" />
+           </div>
+           <div class="field">
+             <label for="bat1_ciclos">Ciclos de carga</label>
+             <input id="bat1_ciclos" name="bat1_ciclos" type="number" min="0" placeholder="0" />
+           </div>
+         </div>
 
-        <div class="form-grid">
-          <div class="field">
-            <label for="bat2_sn">Batería 2 - S/N</label>
-            <input id="bat2_sn" name="bat2_sn" type="text" placeholder="BAT-002" />
-          </div>
-          <div class="field">
-            <label for="bat2_mision">Misión (min)</label>
-            <input id="bat2_mision" name="bat2_mision" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="bat2_total">Total (min)</label>
-            <input id="bat2_total" name="bat2_total" type="number" min="0" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="bat2_ciclos">Ciclos de carga</label>
-            <input id="bat2_ciclos" name="bat2_ciclos" type="number" min="0" placeholder="0" />
-          </div>
-        </div>
+         <div class="form-grid">
+           <div class="field">
+             <label for="bat2_sn">Batería 2 - S/N</label>
+             <input id="bat2_sn" name="bat2_sn" type="text" placeholder="BAT-002" />
+           </div>
+           <div class="field">
+             <label for="bat2_total">Total (min)</label>
+             <input id="bat2_total" name="bat2_total" type="number" min="0" placeholder="0" />
+           </div>
+           <div class="field">
+             <label for="bat2_ciclos">Ciclos de carga</label>
+             <input id="bat2_ciclos" name="bat2_ciclos" type="number" min="0" placeholder="0" />
+           </div>
+         </div>
 
         <div class="subttl">Motores</div>
         <div class="form-grid">

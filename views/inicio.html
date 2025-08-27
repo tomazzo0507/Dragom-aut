@@ -108,8 +108,6 @@
           aria-label="Buscar por número de serie (S/N)" required />
         <button class="search-btn" type="submit">Buscar</button>
       </form>
-
-      <section id="search-results" class="results"></section>
     </main>
   </div>
 
@@ -118,7 +116,7 @@
     <div class="modal__panel">
       <header class="modal__head">
         <h3>Agregar aeronave</h3>
-        <button type="button" class="modal__close" id="close-modal">&times;</button>
+        <button type="button" class="modal__close" id="close-modal" onclick="document.getElementById('modal-drone').classList.remove('show'); document.body.style.overflow = '';">&times;</button>
       </header>
       <form id="form-drone" class="modal__form">
         <div class="row">

@@ -4,8 +4,14 @@ import { getDrone } from './firebase.js';
 const sn = localStorage.getItem('dfr:selectedDroneSN');
 if (!sn) location.href = '/views/inicio.html';
 
-const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = (val ?? ''); };
-const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html ?? ''; };
+const set = (id, val) => {
+  const nodes = document.querySelectorAll(`[id="${id}"]`);
+  nodes.forEach(el => { el.textContent = (val ?? ''); });
+};
+const setHTML = (id, html) => {
+  const nodes = document.querySelectorAll(`[id="${id}"]`);
+  nodes.forEach(el => { el.innerHTML = html ?? ''; });
+};
 
 (async () => {
   // Obtener datos del localStorage
@@ -25,6 +31,10 @@ const setHTML = (id, html) => { const el = document.getElementById(id); if (el) 
   
   // Obtener datos de la aeronave desde Firebase
   const ac = await getDrone(sn).catch(() => null);
+
+  // P/N y S/N en cabeceras (como el resto de pv_*)
+  set('pv_partnum', ac?.pn || '');
+  set('pv_serialnum', ac?.sn || sn || '');
 
   // ===== PRE-VUELO (IDs: pv_*) =====
   // Información General
