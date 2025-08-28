@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuth() {
+      return request.auth != null;
+    }
+    function userRole() {
+      return isAuth()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+    function isEditor() {
+      return userRole() == "editor";
+    }
+
+    // users: cada usuario su propio doc
+    match /users/{uid} {
+      allow read, create, update: if isAuth() && request.auth.uid == uid;
+    }
+
+    // Colección "aircraft"
+    match /aircraft/{sn} {
+      allow read: if isAuth();
+
+      // crear aeronave: solo editores
+      allow create: if isEditor();
+
+      // actualizar: editores o incremento seguro de minutos/estado
+      allow update: if isEditor() ||
+        (
+          isAuth() &&
+          request.resource.data.keys().hasOnly(["sn","pn","minutes_total","createdAt","updatedAt","status","lastFlightDate","motors","batteries"]) &&
+          request.resource.data.sn == resource.data.sn &&
+          request.resource.data.pn == resource.data.pn &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.minutes_total >= resource.data.minutes_total
+        );
+
+      // subcolección flights
+      match /flights/{flightId} {
+        allow read: if isAuth();
+        // ambos roles pueden crear/actualizar vuelos (pre/post/cronómetro)
+        allow create, update: if isAuth();
+      }
+    }
+  }
+}

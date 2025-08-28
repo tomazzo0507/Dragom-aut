@@ -1,7 +1,5 @@
 // /controller/firebase.js
 // SDK modular v10+ (Firebase 12). Solo funcionalidades del lado cliente.
-// NOTA: para "crear usuarios" desde /views/register.html usamos invitaciones por email link,
-// sin cerrar la sesión del editor (no existe createUser admin desde cliente).
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 
@@ -49,65 +47,6 @@ export function watchAuth(cb) {
       cb(user, null);
     }
   });
-}
-
-// ========== Invitaciones (sustituye "adminCreateUser") ==========
-// Crea un "usuario invitado": guarda su rol en Firestore y envía magic link por correo.
-// NO cierra la sesión del editor.
-export async function adminCreateUser({ name, email, password, role }) {
-  // 1) Guarda invitación/rol (si el usuario termina creando la cuenta, este doc se actualizará luego)
-  const invitesRef = doc(db, 'invites', email.toLowerCase());
-  await setDoc(invitesRef, {
-    fullName: name,
-    email: email.toLowerCase(),
-    role,
-    invitedAt: serverTimestamp(),
-    invitedBy: auth.currentUser?.uid || null
-  });
-
-  // 2) Envía email-link de acceso
-  const actionCodeSettings = {
-    url: `${location.origin}/index.html?email=${encodeURIComponent(email)}`,
-    handleCodeInApp: true
-  };
-  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-  // La contraseña no se usa en email-link; queda a criterio cambiar a flujo "set password" si luego agregas Cloud Functions
-  return true;
-}
-
-// Si el usuario llega por email-link a /index.html se puede completar el sign in:
-export async function completeEmailLinkSignInIfNeeded() {
-  try {
-    if (isSignInWithEmailLink(auth, location.href)) {
-      const url = new URL(location.href);
-      let email = url.searchParams.get('email') || window.localStorage.getItem('dfr:pendingEmail');
-      if (!email) {
-        // como último recurso pedirlo
-        email = prompt('Confirma tu correo para iniciar sesión:');
-      }
-      await signInWithEmailLink(auth, email, location.href);
-
-      // si existe invitación, crear/actualizar users/{uid}
-      const u = auth.currentUser;
-      if (u) {
-        const invSnap = await getDoc(doc(db, 'invites', email.toLowerCase()));
-        const role = invSnap.exists() ? (invSnap.data().role || 'revisor') : 'revisor';
-        await setDoc(doc(db, 'users', u.uid), {
-          uid: u.uid,
-          fullName: u.displayName || email.split('@')[0],
-          email: email.toLowerCase(),
-          role,
-          isActive: true,
-          createdAt: serverTimestamp()
-        }, { merge: true });
-      }
-      window.localStorage.removeItem('dfr:pendingEmail');
-      // redirige al dashboard
-      location.href = '/views/inicio.html';
-    }
-  } catch (e) {
-    console.error('Email link sign-in error:', e);
-  }
 }
 
 export async function logout() { await signOut(auth); }

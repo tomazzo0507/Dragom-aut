@@ -240,18 +240,24 @@
 
 .modal__dialog {
   width: min(780px, 92vw);
+  max-height: 90vh;
+  /* 🔹 nunca será más alto que el viewport */
   background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 14px;
   box-shadow: 0 30px 80px rgba(2, 6, 23, .10);
+
+  display: flex;
+  /* 🔹 estructura interna flexible */
+  flex-direction: column;
+  /* cabeza arriba, body crece, footer abajo */
 }
 
-.modal__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.modal__head,
+.modal__foot {
+  flex-shrink: 0;
+  /* no se encogen, siempre visibles */
 }
 
 .modal__head h3 {
@@ -275,9 +281,9 @@
 }
 
 .modal__body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .form-grid {
@@ -341,4 +347,4 @@
 }
 
 /* Rol (por si quieres versión CSS en vez de JS) */
-/* body[data-role="revisor"] .only-editor { display:none !important; } */
+/* body[data-role="revisor"] .-editor { display:none !important; } */
