@@ -1,5 +1,4 @@
 // /controller/register.js
-import { adminCreateUser } from './firebase.js';
 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
@@ -11,6 +10,26 @@ const roleSel  = document.getElementById('role');
 
 const currentRole = sessionStorage.getItem('dfr:role');
 if (currentRole !== 'editor') go('./inicio.html');
+
+// Función para registrar usuario usando Cloud Function
+async function registrarUsuario({ name, email, password, role }) {
+  try {
+    const res = await fetch('https://<TU_PROYECTO>.cloudfunctions.net/adminCreateUser', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('Usuario creado correctamente.');
+      form.reset();
+    } else {
+      alert('No se pudo crear el usuario: ' + (data.error || 'Error desconocido'));
+    }
+  } catch (err) {
+    alert('No se pudo crear el usuario: ' + (err.message || err));
+  }
+}
 
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -25,12 +44,5 @@ form?.addEventListener('submit', async (e) => {
     return;
   }
 
-  try {
-    await adminCreateUser({ name, email: correo, password: pass, role: newRole });
-    alert('Usuario creado correctamente.');
-    form.reset();
-  } catch (err) {
-    console.error(err);
-    alert(`No se pudo crear el usuario: ${err.code || err.message || err}`);
-  }
+  await registrarUsuario({ name, email: correo, password: pass, role: newRole });
 });
