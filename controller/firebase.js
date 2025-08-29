@@ -10,7 +10,8 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
   signOut,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -50,6 +51,33 @@ export function watchAuth(cb) {
 }
 
 export async function logout() { await signOut(auth); }
+
+// ========== Crear usuarios (Admin) ==========
+export async function adminCreateUser({ name, email, password, role }) {
+  try {
+    // Crear usuario en Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Crear documento del usuario en Firestore
+    const userRef = doc(db, 'users', user.uid);
+    await setDoc(userRef, {
+      name,
+      email,
+      role,
+      createdAt: serverTimestamp(),
+      uid: user.uid
+    });
+
+    // Cerrar sesión del usuario recién creado para que no interfiera con el admin
+    await signOut(auth);
+
+    return user;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+}
 
 // ========== Aeronaves ==========
 export async function getDrone(sn) {

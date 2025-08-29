@@ -1,4 +1,5 @@
 // /controller/register.js
+import { adminCreateUser } from './firebase.js';
 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
@@ -7,28 +8,19 @@ const fullName = document.getElementById('fullName');
 const email    = document.getElementById('email');
 const password = document.getElementById('password');
 const roleSel  = document.getElementById('role');
+const toggleIcon = document.getElementById('togglePassword');
 
 const currentRole = sessionStorage.getItem('dfr:role');
 if (currentRole !== 'editor') go('./inicio.html');
 
-// Función para registrar usuario usando Cloud Function
-async function registrarUsuario({ name, email, password, role }) {
-  try {
-    const res = await fetch('https://<TU_PROYECTO>.cloudfunctions.net/adminCreateUser', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role })
-    });
-    const data = await res.json();
-    if (data.success) {
-      alert('Usuario creado correctamente.');
-      form.reset();
-    } else {
-      alert('No se pudo crear el usuario: ' + (data.error || 'Error desconocido'));
-    }
-  } catch (err) {
-    alert('No se pudo crear el usuario: ' + (err.message || err));
-  }
+// Funcionalidad del botón de mostrar/ocultar contraseña
+if (toggleIcon && password) {
+  toggleIcon.addEventListener('click', () => {
+    const isPassword = password.type === 'password';
+    password.type = isPassword ? 'text' : 'password';
+    toggleIcon.classList.toggle('fa-eye', isPassword);
+    toggleIcon.classList.toggle('fa-eye-slash', !isPassword);
+  });
 }
 
 form?.addEventListener('submit', async (e) => {
@@ -44,5 +36,12 @@ form?.addEventListener('submit', async (e) => {
     return;
   }
 
-  await registrarUsuario({ name, email: correo, password: pass, role: newRole });
+  try {
+    await adminCreateUser({ name, email: correo, password: pass, role: newRole });
+    alert('Usuario creado correctamente.');
+    form.reset();
+  } catch (err) {
+    console.error(err);
+    alert(`No se pudo crear el usuario: ${err.code || err.message || err}`);
+  }
 });
