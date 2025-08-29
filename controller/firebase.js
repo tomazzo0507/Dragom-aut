@@ -69,9 +69,6 @@ export async function adminCreateUser({ name, email, password, role }) {
       uid: user.uid
     });
 
-    // Cerrar sesión del usuario recién creado para que no interfiera con el admin
-    await signOut(auth);
-
     return user;
   } catch (error) {
     console.error('Error creating user:', error);

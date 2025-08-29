@@ -1,5 +1,5 @@
 // /controller/register.js
-import { adminCreateUser } from './firebase.js';
+import { adminCreateUser, logout } from './firebase.js';
 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
@@ -38,8 +38,13 @@ form?.addEventListener('submit', async (e) => {
 
   try {
     await adminCreateUser({ name, email: correo, password: pass, role: newRole });
-    alert('Usuario creado correctamente.');
-    form.reset();
+    alert('Usuario creado correctamente. Serás redirigido al login.');
+    
+    // Cerrar sesión del administrador para redirigir al login
+    await logout();
+    
+    // Redirigir al index.html principal
+    go('../index.html');
   } catch (err) {
     console.error(err);
     alert(`No se pudo crear el usuario: ${err.code || err.message || err}`);
