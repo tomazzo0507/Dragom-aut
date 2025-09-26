@@ -11,7 +11,9 @@ import {
   signInWithEmailLink,
   signOut,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -59,6 +61,13 @@ export async function adminCreateUser({ name, email, password, role }) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    // Enviar correo de verificación
+    try {
+      await sendEmailVerification(user);
+    } catch (e) {
+      console.error('No se pudo enviar verificación', e);
+    }
+
     // Crear documento del usuario en Firestore
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, {
@@ -74,6 +83,11 @@ export async function adminCreateUser({ name, email, password, role }) {
     console.error('Error creating user:', error);
     throw error;
   }
+}
+
+// Enviar correo de recuperación de contraseña
+export async function resetPassword(email) {
+  return sendPasswordResetEmail(auth, email);
 }
 
 // ========== Aeronaves ==========
@@ -133,10 +147,18 @@ function flightsCol(sn) {
   return collection(db, 'aircraft', sn, 'flights');
 }
 
-export async function ensureFlight(sn, preflight) {
+// Obtener código secuencial (0001, 0002, ...)
+export async function getNextFlightCode(sn) {
+  const snap = await getDocs(flightsCol(sn));
+  const count = snap.size + 1;
+  return String(count).padStart(4, '0');
+}
+
+export async function ensureFlight(sn, preflight, code) {
   // Crea SIEMPRE un vuelo nuevo (flujo: un preflight -> un vuelo)
   const ref = await addDoc(flightsCol(sn), {
     aircraftSN: sn,
+    code,
     status: 'preflight',
     createdAt: serverTimestamp(),
     preflight
@@ -203,6 +225,19 @@ export async function getLastCompletedFlight(sn) {
   if (snaps.empty) return null;
   const d = snaps.docs[0];
   return { id: d.id, ...d.data() };
+}
+
+// Guardar registro de reporte PDF
+export async function saveReport(sn, { name, url }) {
+  const col = collection(db, 'aircraft', sn, 'reports');
+  await addDoc(col, { name, url, createdAt: serverTimestamp() });
+}
+
+// Reportes PDF almacenados
+export async function getReports(sn) {
+  const col = collection(db, 'aircraft', sn, 'reports');
+  const snap = await getDocs(col);
+  return snap.docs.map(d => d.data());
 }
 
 // Obtener vuelo específico por ID
