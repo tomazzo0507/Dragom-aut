@@ -161,6 +161,14 @@ body {
   text-decoration: underline;
 }
 
+.status {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.status.error { color: #dc2626; }
+.status.success { color: #16a34a; }
+
 /* ===== Lado derecho: bienvenida ===== */
 .login-right {
   position: relative;

@@ -11,7 +11,8 @@ import {
   signInWithEmailLink,
   signOut,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
 import {
@@ -214,4 +215,4 @@ export async function getFlightById(sn, flightId) {
 }
 
 // ===== Re-export para que login/logout importen desde ./firebase.js (solución 1)
-export { onAuthStateChanged, signInWithEmailAndPassword, signOut };
+export { onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail };
