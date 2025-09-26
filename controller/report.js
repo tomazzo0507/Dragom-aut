@@ -14,22 +14,111 @@ const setHTML = (id, html) => {
   nodes.forEach(el => { el.innerHTML = html ?? ''; });
 };
 
+const safeParse = (raw, key) => {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn(`No se pudo interpretar ${key}:`, err);
+    return null;
+  }
+};
+
 (async () => {
   // Obtener datos del localStorage
   const lastFlightData = localStorage.getItem('dfr:lastFlightData');
   const preflightData = localStorage.getItem('dfr:preflightData');
   const postflightData = localStorage.getItem('dfr:postflightData');
-  
-  if (!lastFlightData) {
-    console.warn('No hay datos de vuelo en localStorage');
+
+  const flightData = safeParse(lastFlightData, 'dfr:lastFlightData');
+  if (!flightData) {
+    console.warn('No hay datos de vuelo válidos en localStorage');
     return;
   }
 
   // Parsear datos del localStorage
-  const flightData = JSON.parse(lastFlightData);
-  const pre = preflightData ? JSON.parse(preflightData) : {};
-  const post = postflightData ? JSON.parse(postflightData) : {};
+  const pre = safeParse(preflightData, 'dfr:preflightData') || {};
+  const post = safeParse(postflightData, 'dfr:postflightData') || {};
   
+  const initButtons = () => {
+    const btnP = document.getElementById('btnPrint');
+    const btnS = document.getElementById('btnSave');
+
+    const toggleButtons = (hidden) => {
+      if (btnP) btnP.style.display = hidden ? 'none' : '';
+      if (btnS) {
+        btnS.style.display = hidden ? 'none' : '';
+        btnS.disabled = hidden;
+      }
+    };
+
+    const restoreButtonsAfterPrint = () => {
+      toggleButtons(false);
+    };
+
+    if (btnP) {
+      btnP.addEventListener('click', () => {
+        toggleButtons(true);
+
+        const handleAfterPrint = () => {
+          window.removeEventListener('afterprint', handleAfterPrint);
+          restoreButtonsAfterPrint();
+        };
+        window.addEventListener('afterprint', handleAfterPrint, { once: true });
+
+        const mq = window.matchMedia?.('print');
+        if (mq) {
+          const handler = (e) => {
+            if (!e.matches) {
+              mq.removeEventListener?.('change', handler);
+              mq.removeListener?.(handler);
+              restoreButtonsAfterPrint();
+            }
+          };
+          mq.addEventListener?.('change', handler);
+          mq.addListener?.(handler);
+        }
+
+        // Fallback en caso de que los eventos anteriores no estén disponibles
+        setTimeout(restoreButtonsAfterPrint, 0);
+
+        window.print();
+      });
+    }
+
+    if (btnS) {
+      btnS.addEventListener('click', async () => {
+        toggleButtons(true);
+        try {
+          const fileName = `reporte${pre.code || '0000'}-${sn}`;
+          const pdfBlob = await html2pdf().from(document.body).output('blob');
+          const fd = new FormData();
+          fd.append('file', pdfBlob, `${fileName}.pdf`);
+          fd.append('upload_preset', uploadPreset);
+          fd.append('public_id', fileName);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
+            method: 'POST',
+            body: fd
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error?.message || 'upload_failed');
+          await saveReport(sn, { name: fileName, url: data.secure_url });
+        } catch (err) {
+          console.error(err);
+          alert('No se pudo guardar el reporte. Intenta nuevamente.');
+        } finally {
+          toggleButtons(false);
+        }
+      });
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initButtons, { once: true });
+  } else {
+    initButtons();
+  }
+
   // Obtener datos de la aeronave desde Firebase
   const ac = await getDrone(sn).catch(() => null);
 
@@ -139,46 +228,6 @@ const setHTML = (id, html) => {
     const url = post[key];
     if (url) {
       setHTML(cellId, `<img src="${url}" alt="firma" style="max-height:80px; object-fit:contain;">`);
-    }
-  });
-
-  // ====== Botón imprimir ======
-  document.addEventListener('DOMContentLoaded', () => {
-    const btnP = document.getElementById('btnPrint');
-    const btnS = document.getElementById('btnSave');
-    if (btnP) {
-      btnP.addEventListener('click', () => {
-        btnP.style.display = 'none';
-        btnS?.style.display = 'none';
-        window.print();
-      });
-    }
-    if (btnS) {
-      btnS.addEventListener('click', async () => {
-        btnP.style.display = 'none';
-        btnS.disabled = true;
-        btnS.style.display = 'none';
-        try {
-          const fileName = `reporte${pre.code || '0000'}-${sn}`;
-          const pdfBlob = await html2pdf().from(document.body).output('blob');
-          const fd = new FormData();
-          fd.append('file', pdfBlob, `${fileName}.pdf`);
-          fd.append('upload_preset', uploadPreset);
-          fd.append('public_id', fileName);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
-            method: 'POST',
-            body: fd
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error?.message || 'upload_failed');
-          await saveReport(sn, { name: fileName, url: data.secure_url });
-        } catch (err) {
-          console.error(err);
-          btnP.style.display = '';
-          btnS.style.display = '';
-          btnS.disabled = false;
-        }
-      });
     }
   });
 

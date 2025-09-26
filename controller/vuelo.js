@@ -1,5 +1,5 @@
 // /controller/vuelo.js
-import { setFlightStart, setFlightEnd, addMinutes } from './firebase.js';
+import { setFlightStart, setFlightEnd, addMinutes, getFlightById } from './firebase.js';
 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
@@ -73,8 +73,7 @@ function addMarker(phase){
 
   timeline.push({ t: segundos, phase });
 
-  const pct = Math.min(100, (segundos / Math.max(1, segundos)) * 100);
-  el.style.left = pct + '%';
+  layoutMarkers(segundos || 1);
 }
 
 async function startFlight(){
@@ -113,10 +112,11 @@ async function stopFlight(){
   
   // Guardar datos del vuelo en localStorage para el postvuelo
   const flightData = {
+    flightId,
     startTime: new Date(startMs).toISOString(),
-    endTime: endTime,
-    durationMin: durationMin,
-    timeline: timeline,
+    endTime,
+    durationMin,
+    timeline,
     finished: true
   };
   localStorage.setItem('dfr:lastFlightData', JSON.stringify(flightData));
@@ -153,11 +153,37 @@ for(const [id,label] of phases){
 }
 
 // Verificar si ya hay un vuelo terminado al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const lastFlightData = localStorage.getItem('dfr:lastFlightData');
   if (lastFlightData) {
-    const data = JSON.parse(lastFlightData);
-    if (data.finished && data.flightId === flightId) {
+    let data;
+    try {
+      data = JSON.parse(lastFlightData);
+    } catch (err) {
+      console.warn('No se pudo interpretar lastFlightData:', err);
+      return;
+    }
+    if (!data.flightId && flightId) {
+      data.flightId = flightId;
+      localStorage.setItem('dfr:lastFlightData', JSON.stringify(data));
+    }
+
+    if (!data.finished) return;
+
+    let shouldRestore = !flightId || data.flightId === flightId;
+
+    if (shouldRestore && data.flightId) {
+      try {
+        const serverFlight = await getFlightById(sn, data.flightId);
+        if (!serverFlight || serverFlight.status !== 'completed') {
+          shouldRestore = false;
+        }
+      } catch (err) {
+        console.warn('No se pudo verificar el estado del vuelo en Firestore:', err);
+      }
+    }
+
+    if (shouldRestore) {
       finished = true;
       segundos = data.durationMin * 60;
       timeline = data.timeline || [];
