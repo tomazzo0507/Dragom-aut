@@ -1,5 +1,6 @@
 // /controller/report.js
-import { getDrone } from './firebase.js';
+import { getDrone, saveReport } from './firebase.js';
+import { cloudName, uploadPreset } from './cloudinary.js';
 
 const sn = localStorage.getItem('dfr:selectedDroneSN');
 if (!sn) location.href = '/views/inicio.html';
@@ -45,7 +46,7 @@ const setHTML = (id, html) => {
   set('pv_tiempo_est', pre.general?.tiempo_estimado);
   set('pv_altitud_agl', ''); // Campo no presente en el formulario
   set('pv_proposito', pre.general?.proposito || '');
-  set('pv_codigo', ''); // Campo no presente en el formulario
+  set('pv_codigo', pre.code || '');
 
   // Condiciones Atmosféricas
   set('pv_viento', pre.meteo?.viento_ms);
@@ -143,10 +144,40 @@ const setHTML = (id, html) => {
 
   // ====== Botón imprimir ======
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btnPrint');
-    if (btn) {
-      btn.addEventListener('click', () => {
+    const btnP = document.getElementById('btnPrint');
+    const btnS = document.getElementById('btnSave');
+    if (btnP) {
+      btnP.addEventListener('click', () => {
+        btnP.style.display = 'none';
+        btnS?.style.display = 'none';
         window.print();
+      });
+    }
+    if (btnS) {
+      btnS.addEventListener('click', async () => {
+        btnP.style.display = 'none';
+        btnS.disabled = true;
+        btnS.style.display = 'none';
+        try {
+          const fileName = `reporte${pre.code || '0000'}-${sn}`;
+          const pdfBlob = await html2pdf().from(document.body).output('blob');
+          const fd = new FormData();
+          fd.append('file', pdfBlob, `${fileName}.pdf`);
+          fd.append('upload_preset', uploadPreset);
+          fd.append('public_id', fileName);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
+            method: 'POST',
+            body: fd
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error?.message || 'upload_failed');
+          await saveReport(sn, { name: fileName, url: data.secure_url });
+        } catch (err) {
+          console.error(err);
+          btnP.style.display = '';
+          btnS.style.display = '';
+          btnS.disabled = false;
+        }
       });
     }
   });

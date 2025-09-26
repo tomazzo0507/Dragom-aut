@@ -1,10 +1,11 @@
 // /controller/login.js
-import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './firebase.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, resetPassword } from './firebase.js';
 
 const form       = document.getElementById('login-form');
 const emailInput = document.getElementById('email');
 const passInput  = document.getElementById('password');
 const toggleIcon = document.getElementById('togglePassword');
+const resetLink  = document.getElementById('reset-pass');
 
 if (toggleIcon && passInput) {
   toggleIcon.addEventListener('click', () => {
@@ -30,4 +31,17 @@ form?.addEventListener('submit', async (e) => {
 
 onAuthStateChanged(auth, (user) => {
   if (user) location.href = '/views/inicio.html';
+});
+
+resetLink?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = prompt('Ingresa tu correo para recuperar la contraseña:');
+  if (!email) return;
+  try {
+    await resetPassword(email);
+    alert('Se envió un correo de recuperación.');
+  } catch (err) {
+    console.error(err);
+    alert('No se pudo enviar el correo.');
+  }
 });

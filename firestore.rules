@@ -43,6 +43,11 @@ service cloud.firestore {
         // ambos roles pueden crear/actualizar vuelos (pre/post/cronómetro)
         allow create, update: if isAuth();
       }
+
+      match /reports/{reportId} {
+        allow read: if isAuth();
+        allow create: if isEditor();
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
 // /controller/prevuelo.js
-import { ensureFlight } from './firebase.js';
+import { ensureFlight, getNextFlightCode } from './firebase.js';
 
 const go = (p) => (location.href = new URL(p, location.href).toString());
 
@@ -14,6 +14,7 @@ const inpLugar   = $('Lugar');
 const inpMatric  = $('Matrícula');
 const inpTiempo  = $('Tiempo estimado de vuelo');
 const inpProposito = $('Propósito de vuelo');
+const inpCodigo  = document.getElementById('flight_code');
 
 // METEO
 const inpViento    = $('Velocidad del viento');
@@ -68,6 +69,17 @@ function fillGeneralInfo(){
     if (inpHora)   inpHora.value  = `${hh}:${mi}`;
     if (inpLugar)  inpLugar.value = 'Obteniendo ubicación…';
   }catch{}
+}
+
+// Código de vuelo automático
+async function fillFlightCode(){
+  if (!selectedSN || !inpCodigo) return;
+  try{
+    const code = await getNextFlightCode(selectedSN);
+    inpCodigo.value = code;
+  }catch(err){
+    console.error('No se pudo obtener código', err);
+  }
 }
 
 // ===== Geolocalización + Meteo =====
@@ -218,6 +230,7 @@ async function autoFillWeather(lat, lon){
 
 document.addEventListener('DOMContentLoaded', async ()=>{
   fillGeneralInfo();
+  fillFlightCode();
   try{
     const {lat, lon, acc} = await getCoords();
     await autoFillWeather(lat, lon);
@@ -243,7 +256,10 @@ function readTask(name){
 form?.addEventListener('submit', async (e)=>{
   e.preventDefault();
 
+  const code = inpCodigo?.value || null;
+
   const preflight = {
+    code,
     general: {
       fecha:   inpFecha?.value || null,
       hora:    inpHora?.value || null,
@@ -295,11 +311,10 @@ form?.addEventListener('submit', async (e)=>{
   };
 
   try{
-    const flightId = await ensureFlight(selectedSN, preflight);
+    const flightId = await ensureFlight(selectedSN, preflight, code);
     localStorage.setItem('dfr:currentFlightId', flightId);
-    
-    // Guardar datos del prevuelo en localStorage para el reporte
     localStorage.setItem('dfr:preflightData', JSON.stringify(preflight));
+    if (code) localStorage.setItem('dfr:flightCode', code);
     
     alert('Pre-vuelo guardado. Dirígete a "Iniciar vuelo".');
     go('./vuelo.html');
