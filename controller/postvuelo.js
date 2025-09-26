@@ -44,7 +44,10 @@ function clearCanvas(canvas){
 }
 
 function setupDraw(canvas){
+  if (!canvas) return;
   ensureCanvasScale(canvas);
+  if (canvas.dataset.dfrDrawBound === '1') return;
+  canvas.dataset.dfrDrawBound = '1';
   const ctx = canvas.getContext('2d');
   let drawing = false;
   let last = null;
@@ -96,6 +99,7 @@ if(!sn) location.href = '/views/inicio.html';
 let currentFlight = null;   // { startTime, endTime, durationMin, preflight, ... }
 let durationMin   = 0;
 let drone         = null;
+let localFlightData = null;
 
 // ====== DOM ======
 const formPost     = document.getElementById('post-form');
@@ -132,20 +136,25 @@ async function boot(){
     let useLocalData = false;
     
     if (lastFlightData) {
-      const localData = JSON.parse(lastFlightData);
-      if (localData.finished) {
-        // Usar datos del localStorage para el cronómetro
-        f = {
-          id: localStorage.getItem('dfr:currentFlightId'),
-          startTime: localData.startTime,
-          endTime: localData.endTime,
-          durationMin: localData.durationMin,
-          timeline: localData.timeline,
-          status: 'completed'
-        };
-        currentFlight = f;
-        durationMin = Number(f.durationMin) || 0;
-        useLocalData = true;
+      try {
+        const localData = JSON.parse(lastFlightData);
+        localFlightData = localData;
+        if (localData.finished) {
+          // Usar datos del localStorage para el cronómetro
+          f = {
+            id: localData.flightId || localStorage.getItem('dfr:currentFlightId'),
+            startTime: localData.startTime,
+            endTime: localData.endTime,
+            durationMin: localData.durationMin,
+            timeline: localData.timeline,
+            status: 'completed'
+          };
+          currentFlight = f;
+          durationMin = Number(f.durationMin) || 0;
+          useLocalData = true;
+        }
+      } catch (err) {
+        console.warn('No se pudo interpretar dfr:lastFlightData:', err);
       }
     }
     
@@ -165,7 +174,7 @@ async function boot(){
     let preflightData = null;
     if (useLocalData) {
       // Si usamos datos locales, necesitamos obtener el prevuelo por separado
-      const flightId = localStorage.getItem('dfr:currentFlightId');
+      const flightId = localStorage.getItem('dfr:currentFlightId') || localFlightData?.flightId || null;
       if (flightId) {
         try {
           const flightData = await getFlightById(sn, flightId);
@@ -379,7 +388,7 @@ formPost?.addEventListener('submit', async (e)=>{
   data['nombre_ing_vuelo']      = nameIng?.value   || null;
 
   try{
-    const flightId = localStorage.getItem('dfr:currentFlightId') || currentFlight?.id || null;
+    const flightId = localStorage.getItem('dfr:currentFlightId') || localFlightData?.flightId || currentFlight?.id || null;
     if(!flightId){
       console.warn('No hay flightId en LS; se usará el último vuelo terminado.');
     }
