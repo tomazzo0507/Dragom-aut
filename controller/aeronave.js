@@ -117,7 +117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="block">
             <h4>Batería 1</h4>
             <div class="kv">S/N: ${batteries[0]?.sn || '-'}</div>
-            <div class="kv">Tiempo: ${batteries[0]?.minutes || 0} min</div>
             <div class="kv">Ciclos: ${batteries[0]?.cycles || 0}</div>
             <div class="card__foot" style="justify-content:flex-start; gap:6px;">
               <button class="btn btn-cycle only-editor" data-action="cycle-b1"><i class="ph ph-plus"></i> Ciclo</button>
@@ -127,7 +126,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="block">
             <h4>Batería 2</h4>
             <div class="kv">S/N: ${batteries[1]?.sn || '-'}</div>
-            <div class="kv">Tiempo: ${batteries[1]?.minutes || 0} min</div>
             <div class="kv">Ciclos: ${batteries[1]?.cycles || 0}</div>
             <div class="card__foot" style="justify-content:flex-start; gap:6px;">
               <button class="btn btn-cycle only-editor" data-action="cycle-b2"><i class="ph ph-plus"></i> Ciclo</button>
@@ -166,10 +164,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Baterías
       const batteries = data.batteries || [];
       F.bat1_sn.value = batteries[0]?.sn || '';
-      F.bat1_total.value = batteries[0]?.minutes || '';
+      F.bat1_total.value = batteries[0]?.cycles || '';
       F.bat1_ciclos.value = batteries[0]?.cycles || '';
       F.bat2_sn.value = batteries[1]?.sn || '';
-      F.bat2_total.value = batteries[1]?.minutes || '';
+      F.bat2_total.value = batteries[1]?.cycles || '';
       F.bat2_ciclos.value = batteries[1]?.cycles || '';
       // máximos baterías si existen
       const bmax = data.batteries_max_cycles || [];
@@ -215,8 +213,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const minutes_total = Number(F.ac_total.value || 0) || 0;
 
     const batteries = [
-      { n:1, sn:(F.bat1_sn.value||'').trim(), minutes:Number(F.bat1_total.value||0)||0, cycles:Number(F.bat1_ciclos.value||0)||0 },
-      { n:2, sn:(F.bat2_sn.value||'').trim(), minutes:Number(F.bat2_total.value||0)||0, cycles:Number(F.bat2_ciclos.value||0)||0 },
+      { n:1, sn:(F.bat1_sn.value||'').trim(), minutes:0, cycles:Number(F.bat1_total.value||0)||0 },
+      { n:2, sn:(F.bat2_sn.value||'').trim(), minutes:0, cycles:Number(F.bat2_total.value||0)||0 },
     ];
 
     const motors = [

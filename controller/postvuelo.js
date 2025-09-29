@@ -119,8 +119,8 @@ const notasTextarea= document.getElementById('post_notas_vuelo');
 // Equip ids (S/N y minutos)
 const ids = {
   ac:  { sn:'ac_sn', hoy:'ac_mins_hoy', tot:'ac_mins_total' },
-  b1:  { sn:'b1_sn', hoy:'b1_mins_hoy', tot:'b1_mins_total' },
-  b2:  { sn:'b2_sn', hoy:'b2_mins_hoy', tot:'b2_mins_total' },
+  b1:  { sn:'b1_sn', hoy:'b1_ciclos_hoy', tot:'b1_ciclos_total' },
+  b2:  { sn:'b2_sn', hoy:'b2_ciclos_hoy', tot:'b2_ciclos_total' },
   m1:  { sn:'m1_sn', hoy:'m1_mins_hoy', tot:'m1_mins_total' },
   m2:  { sn:'m2_sn', hoy:'m2_mins_hoy', tot:'m2_mins_total' },
   m3:  { sn:'m3_sn', hoy:'m3_mins_hoy', tot:'m3_mins_total' },
@@ -240,10 +240,10 @@ async function boot(){
     const b2 = drone?.batteries?.[1];
     setTxt(ids.b1.sn,  b1?.sn || '—');
     setTxt(ids.b2.sn,  b2?.sn || '—');
-    setTxt(ids.b1.hoy, `${durationMin} min`);
-    setTxt(ids.b2.hoy, `${durationMin} min`);
-    setTxt(ids.b1.tot, `${b1?.minutes ?? 0} min`);
-    setTxt(ids.b2.tot, `${b2?.minutes ?? 0} min`);
+    setTxt(ids.b1.hoy, '0'); // Ciclos en el vuelo actual (siempre 0 o 1)
+    setTxt(ids.b2.hoy, '0'); // Ciclos en el vuelo actual (siempre 0 o 1)
+    setTxt(ids.b1.tot, `${b1?.cycles ?? 0}`);
+    setTxt(ids.b2.tot, `${b2?.cycles ?? 0}`);
 
     // Motors
     for(let i=0;i<4;i++){

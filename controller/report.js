@@ -118,10 +118,10 @@ const safeParse = (raw, key) => {
   const b2 = ac?.batteries?.[1] || {};
   set('b1_sn', b1.sn || '');
   set('b2_sn', b2.sn || '');
-  set('b1_mins_hoy', durMin != null ? `${durMin}` : '');
-  set('b2_mins_hoy', durMin != null ? `${durMin}` : '');
-  set('b1_mins_total', (b1.minutes ?? 0).toString());
-  set('b2_mins_total', (b2.minutes ?? 0).toString());
+  set('b1_ciclos_hoy', '0'); // Ciclos en el vuelo actual (siempre 0 o 1)
+  set('b2_ciclos_hoy', '0'); // Ciclos en el vuelo actual (siempre 0 o 1)
+  set('b1_ciclos_total', (b1.cycles ?? 0).toString());
+  set('b2_ciclos_total', (b2.cycles ?? 0).toString());
 
   for (let i = 1; i <= 4; i++) {
     const m = ac?.motors?.[i - 1] || {};
