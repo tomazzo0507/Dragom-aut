@@ -85,11 +85,30 @@
     <main class="main">
       <header class="page-header">
         <h1 class="page-title">Iniciar vuelo</h1>
-        <p class="page-sub">Controla el tiempo y marca las fases del vuelo para el reporte.</p>
+        <p class="page-sub">Registra el tiempo y/o marca las fases del vuelo para el reporte.</p>
       </header>
 
-      <!-- Panel del cronómetro -->
-      <section class="card flight_record">
+      <!-- Selector de tipo de vuelo -->
+      <section class="card" id="flight-type-selector">
+        <div class="panel">
+          <button class="btn" id="btn-mode-test" type="button">
+            <i class="ph ph-flask"></i> <span>Iniciar vuelo de prueba</span>
+          </button>
+          <button class="btn btn-main" id="btn-mode-op" type="button">
+            <i class="ph ph-briefcase"></i> <span>Iniciar vuelo operativo</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Flecha volver (Prueba) -->
+      <div class="back-row" id="back-row-test" style="display:none">
+        <button class="btn btn-ghost back-btn" id="btn-back-test" type="button">
+          <i class="ph ph-arrow-left"></i> <span>Cambiar control de vuelo</span>
+        </button>
+      </div>
+
+      <!-- Panel del cronómetro (Prueba) -->
+      <section class="card flight_record" id="panel-test" style="display:none">
         <div class="screen">
           <div class="values" aria-live="polite" aria-atomic="true">
             <span id="cronometro">00:00:00</span>
@@ -118,10 +137,43 @@
       </section>
 
       <!-- Timeline -->
-      <section class="card timeline-wrap">
+      <section class="card timeline-wrap" id="timeline-test" style="display:none">
         <div class="timeLine-container" aria-label="Línea de tiempo del vuelo">
           <div class="timeLine" id="timeLine"></div>
           <div class="markers" id="markers"></div>
+        </div>
+      </section>
+
+      <!-- Panel del cronómetro (Operativo) -->
+      <div class="back-row" id="back-row-op" style="display:none">
+        <button class="btn btn-ghost back-btn" id="btn-back-op" type="button">
+          <i class="ph ph-arrow-left"></i> <span>Volver</span>
+        </button>
+      </div>
+      <section class="card flight_record" id="panel-op" style="display:none">
+        <div class="screen">
+          <div class="values" aria-live="polite" aria-atomic="true">
+            <span id="op-cronometro">00:00:00</span>
+          </div>
+          <div class="status">
+            <span id="op-status" class="status-pill">Listo</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <button class="btn btn-main modo-iniciar" id="op-btn-cronometro" type="button" aria-pressed="false">
+            <i class="ph ph-play"></i> <span>Iniciar</span>
+          </button>
+          <button class="btn" id="op-btn-load" type="button" aria-pressed="false">
+            <i class="ph ph-package"></i> <span>Sin carga</span>
+          </button>
+          <button class="btn" id="op-btn-release" type="button" disabled>
+            <i class="ph ph-arrow-square-out"></i> <span>Carga liberada</span>
+          </button>
+          <div class="op-weight-wrap" id="op-weight-wrap" style="display:none">
+            <label for="op-weight" class="op-weight-label">Peso (kg)</label>
+            <input id="op-weight" type="number" min="0" step="0.1" class="op-weight-input" placeholder="0.0">
+          </div>
         </div>
       </section>
     </main>

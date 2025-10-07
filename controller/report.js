@@ -152,22 +152,32 @@ const safeParse = (raw, key) => {
     }
   });
 
-  // ====== Botón imprimir ======
+  // ====== Botón imprimir (abre diálogo e inicia subida a Cloudinary en paralelo) ======
   document.addEventListener('DOMContentLoaded', () => {
     const btnP = document.getElementById('btnPrint');
-    const btnS = document.getElementById('btnSave');
 
     const toggleButtons = (hidden) => {
       if (btnP) btnP.style.display = hidden ? 'none' : '';
-      if (btnS) {
-        btnS.style.display = hidden ? 'none' : '';
-        btnS.disabled = hidden;
-      }
     };
 
     const restoreButtonsAfterPrint = () => {
       toggleButtons(false);
     };
+
+    async function uploadInBackground(){
+      try{
+        const fileName = `reporte${pre.code || '0000'}-${sn}`;
+        const pdfBlob = await html2pdf().from(document.body).output('blob');
+        const fd = new FormData();
+        fd.append('file', pdfBlob, `${fileName}.pdf`);
+        fd.append('upload_preset', uploadPreset);
+        fd.append('public_id', fileName);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, { method:'POST', body: fd });
+        const data = await res.json();
+        if(!res.ok) throw new Error(data.error?.message || 'upload_failed');
+        await saveReport(sn, { name: fileName, url: data.secure_url });
+      }catch(err){ console.error('Upload Cloudinary fallo:', err); }
+    }
 
     if (btnP) {
       btnP.addEventListener('click', () => {
@@ -192,36 +202,9 @@ const safeParse = (raw, key) => {
           mq.addListener?.(handler);
         }
 
-        // Fallback en caso de que los eventos anteriores no estén disponibles
-        setTimeout(restoreButtonsAfterPrint, 0);
-
+        // Subir en segundo plano y abrir el diálogo de impresión
+        uploadInBackground();
         window.print();
-      });
-    }
-
-    if (btnS) {
-      btnS.addEventListener('click', async () => {
-        toggleButtons(true);
-        try {
-          const fileName = `reporte${pre.code || '0000'}-${sn}`;
-          const pdfBlob = await html2pdf().from(document.body).output('blob');
-          const fd = new FormData();
-          fd.append('file', pdfBlob, `${fileName}.pdf`);
-          fd.append('upload_preset', uploadPreset);
-          fd.append('public_id', fileName);
-          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
-            method: 'POST',
-            body: fd
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error?.message || 'upload_failed');
-          await saveReport(sn, { name: fileName, url: data.secure_url });
-        } catch (err) {
-          console.error(err);
-          alert('No se pudo guardar el reporte. Intenta nuevamente.');
-        } finally {
-          toggleButtons(false);
-        }
       });
     }
   });

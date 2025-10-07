@@ -108,6 +108,18 @@
   transform: none;
 }
 
+/* Positive state (e.g., Lleva carga) */
+.btn-positive{
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.95), rgba(34, 197, 94, 0.85));
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 10px 28px rgba(34, 197, 94, 0.25);
+}
+.btn-positive:hover{
+  filter: none;
+  box-shadow: 0 10px 28px rgba(34, 197, 94, 0.25);
+}
+
 /* Timeline */
 .timeline-wrap{ padding:14px; }
 .timeLine-container{
@@ -170,3 +182,21 @@
 @media (max-width: 480px){
   .values span{ font-size: 32px; }
 }
+
+/* ===== Operativo: peso ===== */
+.op-weight-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.op-weight-label{ font-size:12px; color:var(--muted); }
+.op-weight-input{
+  width: 110px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #e5ebe5;
+}
+
+/* Back row */
+.back-row{ margin: 10px 0; }
+.back-btn{ grid-column: span 1; }

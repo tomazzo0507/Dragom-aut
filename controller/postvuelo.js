@@ -191,7 +191,15 @@ async function boot(){
     // 4) Resumen de vuelo (AUTO)
     setVal('hora_despegue', isoToHHMM(f.startTime));
     setVal('hora_aterrizaje', isoToHHMM(f.endTime));
-    setVal('tiempo_vuelo', `${durationMin} min`);
+    // Mostrar mm:ss exactos
+    try{
+      const secs  = Math.max(0, Math.round((new Date(f.endTime) - new Date(f.startTime))/1000));
+      const mm = String(Math.floor(secs/60)).padStart(2,'0');
+      const ss = String(secs%60).padStart(2,'0');
+      setVal('tiempo_vuelo', `${mm}:${ss}`);
+    }catch{
+      setVal('tiempo_vuelo', `${durationMin} min`);
+    }
 
     // 4.b) Autocompletar Notas con rangos de fases del cronómetro
     try {
@@ -212,6 +220,17 @@ async function boot(){
         const to = Math.max(from, Math.floor(next?.t ?? totalSeconds));
         lines.push(`Fase ${cur.phase} (${fmtMMSS(from)}) - (${fmtMMSS(to)})`);
       }
+      // Agregar eventos de carga liberada (modo operativo)
+      try {
+        const last = JSON.parse(localStorage.getItem('dfr:lastFlightData')||'null');
+        const opEvents = Array.isArray(last?.opEvents) ? last.opEvents : [];
+        opEvents.filter(e => e?.type === 'released')
+          .forEach(e => {
+            const t = fmtMMSS(Math.max(0, Math.floor(e.t||0)));
+            const w = (typeof e.weight === 'number' && e.weight > 0) ? ` (${e.weight} kg)` : '';
+            lines.push(`Carga liberada ${t}${w}`);
+          });
+      } catch {}
       const joined = lines.join(' / ');
       if (notasTextarea && !notasTextarea.value) {
         notasTextarea.value = joined;
