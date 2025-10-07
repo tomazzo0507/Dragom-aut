@@ -157,30 +157,48 @@ const safeParse = (raw, key) => {
     const btnP = document.getElementById('btnPrint');
 
     const toggleButtons = (hidden) => {
-      if (btnP) btnP.style.display = hidden ? 'none' : '';
+      if (!btnP) return;
+      btnP.style.display = hidden ? 'none' : '';
+      btnP.disabled = !!hidden;
     };
 
     const restoreButtonsAfterPrint = () => {
       toggleButtons(false);
     };
 
-    async function uploadInBackground(){
-      try{
+    async function uploadInBackground() {
+      try {
+        if (typeof html2pdf !== 'function') {
+          throw new Error('html2pdf_unavailable');
+        }
+
         const fileName = `reporte${pre.code || '0000'}-${sn}`;
-        const pdfBlob = await html2pdf().from(document.body).output('blob');
+        const worker = html2pdf().from(document.body);
+        const pdfInstance = await worker.toPdf().get('pdf');
+        const pdfBlob = pdfInstance.output('blob');
+        if (!(pdfBlob instanceof Blob)) {
+          throw new Error('pdf_blob_invalid');
+        }
         const fd = new FormData();
         fd.append('file', pdfBlob, `${fileName}.pdf`);
         fd.append('upload_preset', uploadPreset);
         fd.append('public_id', fileName);
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, { method:'POST', body: fd });
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
+          method: 'POST',
+          body: fd
+        });
         const data = await res.json();
-        if(!res.ok) throw new Error(data.error?.message || 'upload_failed');
+        if (!res.ok) throw new Error(data.error?.message || 'upload_failed');
         await saveReport(sn, { name: fileName, url: data.secure_url });
-      }catch(err){ console.error('Upload Cloudinary fallo:', err); }
+      } catch (err) {
+        console.error('Upload Cloudinary fallo:', err);
+      }
     }
 
     if (btnP) {
-      btnP.addEventListener('click', () => {
+      btnP.addEventListener('click', (event) => {
+        event?.preventDefault?.();
         toggleButtons(true);
 
         const handleAfterPrint = () => {
